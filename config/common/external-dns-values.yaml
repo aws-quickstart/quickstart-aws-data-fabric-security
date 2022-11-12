@@ -1,0 +1,12 @@
+provider: aws
+aws:
+  region: REGION
+  assumeRoleArn: ASSUME_ROLE_ARN
+  roleArn: ROLE_ARN
+  zoneType: private
+  zoneTags: 
+  preferCNAME: true
+domainFilters: [HOSTNAME]
+txtPrefix: txt
+policy: sync
+logLevel: debug

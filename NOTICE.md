@@ -1,0 +1,2 @@
+Data Fabric Security on AWS <br />
+Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved. 
