@@ -12,6 +12,11 @@ The Data Fabric Security on AWS solution delivers scalable data security and gov
 - Installed [Node.js](https://nodejs.org/en/) 10.13.0 or later
 - Installed CDK CLI globally <br />
 `npm install -g aws-cdk`
+- Installed Zip package <br />
+```
+sudo apt install zip    # Debian/Ubuntu
+sudo yum install zip    # RHEL/CentOS
+```
 - Active license for Immuta
 - Active license for Radiant Logic
 
@@ -26,9 +31,8 @@ This project deploys the Data Fabric Solution which includes the EKS cluster, Im
 3. Configure solution for deployment. See [Deployment Configuration](#deployment-configuration) section for additional details.
 4. Bootstrap CDK. <br />
 `cdk bootstrap aws://<ACCOUNT_ID>/<REGION>`
-4. Deploy solution using CDK. <br />
-`cdk deploy` <br />
-*Note: It takes about 40 minutes to deploy the solution.*
+4. Deploy solution by running script. <br />
+`./dfs-solution-install.sh`
 
 ### Accessing the Solution
 UI portals for Immuta and Radiant Logic can be accessed by navigating to the endpoints listed below on a browser. (Note: Replace `example.com` with your domain name that was used during deployment.)
@@ -36,7 +40,7 @@ UI portals for Immuta and Radiant Logic can be accessed by navigating to the end
 `https://immuta.example.com`
 
 - Radiant Logic <br />
-`http://radiantlogic.example.com:7070`
+`http://radiantlogic.example.com:7070` <br />
 `https://radiantlogic.example.com:7171`
 
 ### Configuring Data Fabric Security

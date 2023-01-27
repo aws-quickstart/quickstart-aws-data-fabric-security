@@ -1,5 +1,5 @@
-immutaVersion: "2022.2.4"
-imageTag: "2022.2.4"
+immutaVersion: "2022.4.3"
+imageTag: "2022.4.3"
 
 imagePullSecrets:
   # Set the name of the Image Pull Secret used for image pulling.

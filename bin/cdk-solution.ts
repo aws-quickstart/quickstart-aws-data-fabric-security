@@ -1,12 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
-import 'source-map-support/register';
-import { MainStack } from '../lib/main';
 import { AwsSolutionsChecks } from 'cdk-nag';
-import { Aspects } from 'aws-cdk-lib';
+
+import { MainStack } from '../lib/main';
 import { Config } from '../lib/core/config';
 
 const app = new cdk.App();
-Aspects.of(app).add(new AwsSolutionsChecks({ 
+cdk.Aspects.of(app).add(new AwsSolutionsChecks({ 
   verbose: true,
   reports: true
 }));

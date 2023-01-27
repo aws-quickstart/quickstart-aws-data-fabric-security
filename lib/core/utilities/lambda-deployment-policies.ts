@@ -1,17 +1,21 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { CodeBuildDeployParameters, CodeBuildDestroyParameters } from '../interface/codebuild-params';
+import { LambdaDeployParameters, LambdaDestroyParameters } from '../interface/lambda-deployment-parameters';
 
-export class CodeBuildPolicies {
-  static createDeployPolicy(parameters: CodeBuildDeployParameters) {
+export class LambdaDeploymentPolicies {
+  static createDeployPolicy(parameters: LambdaDeployParameters) {
     const deployPolicy = new iam.Policy(parameters.scope, parameters.resourceName, {
       policyName: parameters.resourceName,
       statements: [
         new iam.PolicyStatement({
-          actions: ["eks:DescribeCluster"],
+          actions: ["eks:*"],
           resources: parameters.clusterResources,
         }),
         new iam.PolicyStatement({
           actions: ["sts:AssumeRole"],
+          resources: parameters.assumeRoleResources,
+        }),
+        new iam.PolicyStatement({
+          actions: ["iam:PassRole"],
           resources: parameters.assumeRoleResources,
         }),
       ],
@@ -20,7 +24,7 @@ export class CodeBuildPolicies {
     return deployPolicy;
   }
 
-  static createDestroyPolicy(parameters: CodeBuildDestroyParameters) {
+  static createDestroyPolicy(parameters: LambdaDestroyParameters) {
     const destroyPolicy = new iam.Policy(parameters.scope, parameters.resourceName, {
       policyName: parameters.resourceName,
       statements: [

@@ -1,5 +1,5 @@
 import { Environment, NestedStackProps, StackProps } from "aws-cdk-lib";
-import { ISubnet, IVpc } from "aws-cdk-lib/aws-ec2";
+import { ISecurityGroup, IVpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster } from "aws-cdk-lib/aws-eks";
 import { IRole } from "aws-cdk-lib/aws-iam";
 
@@ -7,8 +7,9 @@ export interface MainStackProps extends StackProps {
   env: Environment,
 }
 
-export interface DataFabricCoreStackProps extends NestedStackProps {
+export interface DataFabricSecurityStackProps extends NestedStackProps {
   env: Environment,
+  prefix: string,
   vpc: {
     vpcId: string,
     subnetIds: string[],
@@ -17,29 +18,23 @@ export interface DataFabricCoreStackProps extends NestedStackProps {
   domain: string
 }
 
-export interface EKSClusterStackProps extends NestedStackProps {
+export interface EksBlueprintsStackProps extends StackProps {
   env: Environment,
-  eksEndpointAccess: string;
-  partition: string,
-  hostedZoneId: string,
+  prefix: string,
   vpc: IVpc,
-  subnets: ISubnet[],
-  instanceType: string,
-  masterRoleArn: string
-}
-
-export interface EKSCommonComponentsStackProps extends NestedStackProps {
-  env: Environment,
-  partition: string,
   domain: string,
   hostedZoneId: string,
-  cluster: Cluster,
-  clusterRole: IRole,
-  masterRoleArn: string
+  endpointAccess: string,
+  instanceType: string,
+  numInstances: number,
+  adminRoleArn: string
 }
 
 export interface ImmutaStackProps extends NestedStackProps {
   env: Environment,
+  prefix: string,
+  vpc: IVpc,
+  securityGroups: [ISecurityGroup],
   partition: string,
   cluster: Cluster,
   clusterRole: IRole,
@@ -65,6 +60,9 @@ export interface ImmutaStackProps extends NestedStackProps {
 
 export interface RadiantLogicStackProps extends NestedStackProps {
   env: Environment,
+  prefix: string,
+  vpc: IVpc,
+  securityGroups: [ISecurityGroup],
   partition: string,
   cluster: Cluster,
   clusterRole: IRole,

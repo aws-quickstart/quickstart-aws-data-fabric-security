@@ -6,28 +6,31 @@ import { LogGroup } from "aws-cdk-lib/aws-logs";
 
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-import { DataFabricCoreStackProps } from "./props/stack-props";
+import { DataFabricSecurityStackProps } from "./props/stack-props";
 
-const commonName = "data-fabric";
-const coreId = (id: string) => `${commonName}-${id}`;
+export class DataFabricSecurityStack extends NestedStack {
+  private readonly coreId: any;
+  private readonly commonName: string;
 
-export class DataFabricCoreStack extends NestedStack {
   public readonly vpc: IVpc;
   public readonly subnets: ISubnet[]=[];
   public readonly privateZone: IPrivateHostedZone;
 
-  constructor(scope: Construct, id: string, props: DataFabricCoreStackProps) {
+  constructor(scope: Construct, id: string, props: DataFabricSecurityStackProps) {
     super(scope, id, props);
+
+    this.coreId = (id: string) => `${props.prefix}-${id}`;
+    this.commonName = props.prefix;
     
     // Create VPC 
     if(props.vpc.vpcId == "" && !props.vpc.vpcId) {
       const cwLogs = new LogGroup(this, 'Log', {
-        logGroupName: `/aws/${commonName}-vpc/flowlogs`,
+        logGroupName: `/aws/${this.commonName}-vpc/flowlogs`,
         removalPolicy: RemovalPolicy.DESTROY,
       });
 
-      this.vpc = new Vpc(this, coreId('vpc'), {
-        vpcName: coreId('vpc'), 
+      this.vpc = new Vpc(this, this.coreId('vpc'), {
+        vpcName: this.coreId('vpc'), 
         maxAzs: props.vpc.maxAZs,
         flowLogs: {
           's3': {
@@ -39,7 +42,7 @@ export class DataFabricCoreStack extends NestedStack {
 
       this.subnets = this.vpc.privateSubnets;
     } else {
-      this.vpc = Vpc.fromLookup(this, coreId('import-vpc'), {
+      this.vpc = Vpc.fromLookup(this, this.coreId('import-vpc'), {
         vpcId: props.vpc.vpcId,
         isDefault: false,
       });
@@ -49,7 +52,7 @@ export class DataFabricCoreStack extends NestedStack {
     }
 
     // Create Route 53 private hosted zone
-    this.privateZone = new PrivateHostedZone(this, coreId('hosted-zone'), {
+    this.privateZone = new PrivateHostedZone(this, this.coreId('hosted-zone'), {
       zoneName: props.domain,
       vpc: this.vpc
     });

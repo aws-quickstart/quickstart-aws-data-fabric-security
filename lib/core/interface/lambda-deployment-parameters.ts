@@ -1,13 +1,13 @@
 import { Construct } from "constructs"
 
-export interface CodeBuildDeployParameters {
+export interface LambdaDeployParameters {
   scope: Construct;
   resourceName: string;
   clusterResources: string[];
   assumeRoleResources: string[];
 }
 
-export interface CodeBuildDestroyParameters {
+export interface LambdaDestroyParameters {
   scope: Construct;
   resourceName: string;
   clusterResources: string[];

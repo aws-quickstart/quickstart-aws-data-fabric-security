@@ -10,48 +10,48 @@ import { AwsCliLayer } from "aws-cdk-lib/lambda-layer-awscli";
 
 import * as path from "path";
 
-import { ImmutaStackProps } from "./props/stack-props";
 import { ILambdaDeploymentStack } from "./core/interface/lambda-deployment-stack";
+import { RadiantLogicStackProps } from "./props/stack-props";
 import { LambdaDeployParameters, LambdaDestroyParameters } from "./core/interface/lambda-deployment-parameters";
 import { LambdaDeploymentPolicies } from "./core/utilities/lambda-deployment-policies";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
 
-export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentStack {
-  private readonly immutaId: any;
+export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploymentStack {
+  private readonly radiantlogicId: any;
   private readonly installName: string;
   private readonly uninstallName: string;
 
-  private namespace = "immuta";
+  private namespace = "radiantlogic";
   private installStr = "install";
   private uninstallStr = "uninstall";
 
   private kubectlLayer = new KubectlLayer(this, 'KubectlLayer');
   private awsCliLayer = new AwsCliLayer(this, 'AwsCliLayer');
-
-  constructor(scope: Construct, id: string, props: ImmutaStackProps) {
+  
+  constructor(scope: Construct, id: string, props: RadiantLogicStackProps) {
     super(scope, id, props);
 
-    this.immutaId = (id: string) => `${props.prefix}-${this.namespace}-${id}`;
-    this.installName = this.immutaId(this.installStr);
-    this.uninstallName = this.immutaId(this.uninstallStr);
+    this.radiantlogicId = (id: string) => `${props.prefix}-${this.namespace}-${id}`;
+    this.installName = this.radiantlogicId(this.installStr);
+    this.uninstallName = this.radiantlogicId(this.uninstallStr);
 
-    const immutaDeploy = this.createDeployFunction(props);
-    immutaDeploy.role?.attachInlinePolicy(this.createDeployPolicy(props));
-    props.cluster.adminRole.grantAssumeRole(immutaDeploy.role!);
+    const radiantlogicDeploy = this.createDeployFunction(props);
+    radiantlogicDeploy.role?.attachInlinePolicy(this.createDeployPolicy(props));
+    props.cluster.adminRole.grantAssumeRole(radiantlogicDeploy.role!);
 
-    const immutaDestroy = this.createDestroyFunction(props);
-    immutaDestroy.role?.attachInlinePolicy(this.createDestroyPolicy(props));
-    props.cluster.adminRole.grantAssumeRole(immutaDestroy.role!);
+    const radiantlogicDestroy = this.createDestroyFunction(props);
+    radiantlogicDestroy.role?.attachInlinePolicy(this.createDestroyPolicy(props));
+    props.cluster.adminRole.grantAssumeRole(radiantlogicDestroy.role!);
 
-    this.createBootstrap(immutaDeploy, immutaDestroy);
+    this.createBootstrap(radiantlogicDeploy, radiantlogicDestroy);
 
     CdkNagSuppressions.createCommonCdkNagSuppressions(this, this.namespace);
   }
 
-  createDeployPolicy(props: ImmutaStackProps): iam.Policy {
+  createDeployPolicy(props: RadiantLogicStackProps): iam.Policy {
     let deployParameters: LambdaDeployParameters = {
       scope: this,
-      resourceName: this.immutaId('deploy-policy'),
+      resourceName: this.radiantlogicId('deploy-policy'),
       clusterResources: [props.cluster.clusterArn],
       assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/DataFabricStack*`]
     }
@@ -59,10 +59,10 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     return LambdaDeploymentPolicies.createDeployPolicy(deployParameters);
   }
 
-  createDestroyPolicy(props: ImmutaStackProps): iam.Policy {
+  createDestroyPolicy(props: RadiantLogicStackProps): iam.Policy {
     let destroyParameters: LambdaDestroyParameters = {
       scope: this,
-      resourceName: this.immutaId('destroy-policy'),
+      resourceName: this.radiantlogicId('destroy-policy'),
       clusterResources: [props.cluster.clusterArn],
       assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/DataFabricStack*`],
       logResources: [
@@ -76,10 +76,10 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     return LambdaDeploymentPolicies.createDeployPolicy(destroyParameters);
   }
 
-  createDeployFunction(props: ImmutaStackProps): lambda.Function {
-    const immutaDeployFunction = new lambda.Function(this, this.installName, {
+  createDeployFunction(props: RadiantLogicStackProps): lambda.Function {
+    const radiantlogicDeployFunction = new lambda.Function(this, this.installName, {
       functionName: this.installName,
-      description: "Lambda function that installs Immuta",
+      description: "Lambda function that installs Radiant Logic",
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
@@ -89,28 +89,20 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
         'NAMESPACE': `${this.namespace}`,
         'CLUSTER_NAME': props.cluster.clusterName,
         'CLUSTER_ADMIN_ROLE': props.cluster.adminRole.roleArn,
+        'HOSTNAME': `${this.namespace}.${props.domain}`,
+        'LICENSE': `${props.radiantlogic.license}`,
+        'ROOTPASS': `${props.radiantlogic.password}`,
         'LAMBDA_SOURCE_FILE': `./${this.installStr}.sh`,
-        'HOSTNAME': `${this.namespace + "." + props.immuta.domain}`,
-        'IMMUTA_USERNAME': `${props.immuta.username}`,
-        'IMMUTA_PASSWORD': `${props.immuta.password}`,
-        'DB_PASSWORD': `${props.immuta.dbPassword.password}`,
-        'DB_SUPER_USER_PASSWORD': `${props.immuta.dbPassword.superUserPassword}`,
-        'DB_REPLICATION_PASSWORD': `${props.immuta.dbPassword.replicationPassword}`,
-        'DB_PATRONI_PASSWORD': `${props.immuta.dbPassword.patroniApiPassword}`,
-        'EQ_PASSWORD': `${props.immuta.qePassword.password}`,
-        'EQ_SUPER_USER_PASSWORD': `${props.immuta.qePassword.superUserPassword}`,
-        'EQ_REPLICATION_PASSWORD': `${props.immuta.qePassword.replicationPassword}`,
-        'EQ_PATRONI_PASSWORD': `${props.immuta.qePassword.patroniApiPassword}`,
       }
     });
 
-    return immutaDeployFunction;
+    return radiantlogicDeployFunction;
   }
 
-  createDestroyFunction(props: ImmutaStackProps): lambda.Function {
-    const immutaDestroyFunction = new lambda.Function(this, this.uninstallName, {
+  createDestroyFunction(props: RadiantLogicStackProps): lambda.Function {
+    const radiantlogicDestroyFunction = new lambda.Function(this, this.uninstallName, {
       functionName: this.uninstallName,
-      description: "Lambda function that uninstalls Immuta",
+      description: "Lambda function that uninstalls Radiant Logic",
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
@@ -124,11 +116,11 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       }
     });
 
-    return immutaDestroyFunction;
+    return radiantlogicDestroyFunction;
   }
 
   createBootstrap(deployFunction: lambda.Function, destroyFunction: lambda.Function): void {
-    let bootstrapRole = new iam.Role(this, this.immutaId('bootstrap-role'), {
+    let bootstrapRole = new iam.Role(this, this.radiantlogicId('bootstrap-role'), {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
@@ -139,9 +131,9 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     }));
 
     //Custom Resource to handle CloudFormation status change events
-    new cr.AwsCustomResource(this, this.immutaId('bootstrap'), {
+    new cr.AwsCustomResource(this, this.radiantlogicId('bootstrap'), {
       timeout: cdk.Duration.minutes(15),
-      functionName: this.immutaId('bootstrap'),
+      functionName: this.radiantlogicId('bootstrap'),
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),

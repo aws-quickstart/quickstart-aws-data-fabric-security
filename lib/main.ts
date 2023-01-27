@@ -1,13 +1,14 @@
 import { Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { DataFabricCoreStack } from "./data-fabric-core-stack";
-import { EKSClusterStack } from "./eks-cluster-stack";
-import { EKSCommonComponentsStack } from "./eks-common-components-stack";
+
+import { DataFabricSecurityStack } from "./data-fabric-security-stack";
 import { ImmutaStack } from "./immuta-stack";
-import { RadiantLogicStack } from "./radiant-logic";
+import { RadiantLogicStack } from "./radiant-logic-stack";
+
 import { MainStackProps } from "./props/stack-props";
 import { Config } from "./core/config";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
+import { EksBlueprintsStack } from "./eks-blueprints-stack";
 
 export class MainStack extends Stack {
 
@@ -15,9 +16,12 @@ export class MainStack extends Stack {
     super(scope, id, props);
 
     const partition = Stack.of(this).partition;
+    const commonName = "data-fabric-security";
+    const mainId = (id: string) => `${commonName}-${id}`;
 
-    const dataFabricCoreStack = new DataFabricCoreStack(this, 'DataFabricCoreStack', {
+    const dataFabricCoreStack = new DataFabricSecurityStack(this, mainId('core-stack'), {
       env: props.env,
+      prefix: commonName,
       vpc: {
         vpcId: Config.Current.Networking.VpcId,
         subnetIds: [Config.Current.Networking.SubnetA, Config.Current.Networking.SubnetB],
@@ -26,37 +30,29 @@ export class MainStack extends Stack {
       domain: Config.Current.Domain
     });
 
-    const eksClusterStack = new EKSClusterStack(this, 'EKSClusterStack', {
+    const eksBlueprintsStack = new EksBlueprintsStack(this, mainId('eks-cluster'), {
       env: props.env,
-      eksEndpointAccess: Config.Current.EKS.EKSEndpointAccess,
-      partition: partition,
-      hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
-      subnets: dataFabricCoreStack.subnets,
+      prefix: commonName,
       vpc: dataFabricCoreStack.vpc,
-      instanceType: Config.Current.EKS.InstanceType,
-      masterRoleArn: Config.Current.EKS.EKSAdminRole
-    });
-
-    const eksCommonComponentsStack = new EKSCommonComponentsStack(this, 'EKSCommonComponentsStack', {
-      env: props.env, 
-      partition: partition,
       domain: Config.Current.Domain,
       hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
-      cluster: eksClusterStack.cluster, 
-      clusterRole: eksClusterStack.clusterMasterRole, 
-      masterRoleArn: Config.Current.EKS.EKSAdminRole
+      endpointAccess: Config.Current.EKS.EKSEndpointAccess,
+      instanceType: Config.Current.EKS.InstanceType,
+      numInstances: Config.Current.EKS.ClusterSize,
+      adminRoleArn: Config.Current.EKS.EKSAdminRole
     });
 
-    // EKS Cluster dependencies
-    eksClusterStack.node.addDependency(dataFabricCoreStack);
-    eksCommonComponentsStack.node.addDependency(eksClusterStack);
+    const eksClusterStack = eksBlueprintsStack.getStack();
 
     if (Config.Current.Immuta.Deploy) {
-      const immutaStack = new ImmutaStack(this, 'ImmutaStack', {
+      new ImmutaStack(eksClusterStack, mainId('immuta-stack'), {
         env: props.env, 
+        prefix: commonName,
+        vpc: dataFabricCoreStack.vpc,
+        securityGroups: [eksClusterStack.getClusterInfo().cluster.clusterSecurityGroup],
         partition: partition,
-        cluster: eksClusterStack.cluster, 
-        clusterRole: eksClusterStack.clusterMasterRole,
+        cluster: eksClusterStack.getClusterInfo().cluster, 
+        clusterRole: eksClusterStack.getClusterInfo().cluster.adminRole,
         hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
         immuta: {
           domain: Config.Current.Domain,
@@ -76,16 +72,17 @@ export class MainStack extends Stack {
           },
         }
       });
-
-      immutaStack.node.addDependency(eksCommonComponentsStack);
     }
     
     if (Config.Current.RadiantLogic.Deploy) {
-      const radiantLogicStack = new RadiantLogicStack(this, 'RadiantLogicStack', {
+      new RadiantLogicStack(eksClusterStack, mainId('radiant-logic-stack'), {
         env: props.env, 
+        prefix: commonName,
+        vpc: dataFabricCoreStack.vpc,
+        securityGroups: [eksClusterStack.getClusterInfo().cluster.clusterSecurityGroup],
         partition: partition,
-        cluster: eksClusterStack.cluster, 
-        clusterRole: eksClusterStack.clusterMasterRole,
+        cluster: eksClusterStack.getClusterInfo().cluster, 
+        clusterRole: eksClusterStack.getClusterInfo().cluster.adminRole,
         domain: Config.Current.Domain,
         hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
         radiantlogic: {
@@ -93,24 +90,21 @@ export class MainStack extends Stack {
           password: Config.Current.RadiantLogic.RootPassword
         }
       });
-
-      radiantLogicStack.node.addDependency(eksCommonComponentsStack);
     }
 
     // Supress cdk-nag findings
-    this.serviceRoleCdkNagSuppression();
-    this.lambdaVersionCdkNagSuppression();
+    this.createCdkSuppressions();
   }
 
   private serviceRoleCdkNagSuppression() {
     for (const child of this.node.findAll()) {
 
       const rules: { [key: string]: string; } = {
-        'AwsSolutions-IAM4': 'Suppressing managed policies created by ServiceRole',
-        'AwsSolutions-IAM5': 'Suppressing wildcard resources created by ServiceRole'
+        'AwsSolutions-IAM4': 'Suppressing managed policies created by ServiceRole/DefaultPolicy/NodeGroupRole',
+        'AwsSolutions-IAM5': 'Suppressing wildcard resources created by ServiceRole/DefaultPolicy/NodeGroupRole'
       }
 
-      if (child.node.path.includes("ServiceRole")) {
+      if (child.node.path.includes("ServiceRole") || child.node.path.includes("DefaultPolicy") || child.node.path.includes("NodeGroupRole")) {
         for (const rule in rules) {
           CdkNagSuppressions.createResourceCdkNagSuppressions(child, rule, rules[rule]);
         }
@@ -118,12 +112,20 @@ export class MainStack extends Stack {
     }
   }
 
-  private lambdaVersionCdkNagSuppression() {
+  private createCdkSuppressions() {
     CdkNagSuppressions.createStackCdkNagSuppressions(
       this, 
       'AwsSolutions-L1', 
       'Suppressing all Lambda functions not using latest runtime version',
     );
+
+    CdkNagSuppressions.createStackCdkNagSuppressions(
+      this, 
+      'AwsSolutions-EKS1', 
+      'Suppressing K8s public API endpoint as configuration is external',
+    );
+
+    this.serviceRoleCdkNagSuppression();
   }
 
 }
