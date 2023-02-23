@@ -36,11 +36,9 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     this.uninstallName = this.immutaId(this.uninstallStr);
 
     const immutaDeploy = this.createDeployFunction(props);
-    immutaDeploy.role?.attachInlinePolicy(this.createDeployPolicy(props));
     props.cluster.adminRole.grantAssumeRole(immutaDeploy.role!);
 
     const immutaDestroy = this.createDestroyFunction(props);
-    immutaDestroy.role?.attachInlinePolicy(this.createDestroyPolicy(props));
     props.cluster.adminRole.grantAssumeRole(immutaDestroy.role!);
 
     this.createBootstrap(immutaDeploy, immutaDestroy);
@@ -48,38 +46,48 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     CdkNagSuppressions.createCommonCdkNagSuppressions(this, this.namespace);
   }
 
-  createDeployPolicy(props: ImmutaStackProps): iam.Policy {
+  createDeployPolicy(props: ImmutaStackProps): iam.PolicyDocument {
     let deployParameters: LambdaDeployParameters = {
       scope: this,
       resourceName: this.immutaId('deploy-policy'),
       clusterResources: [props.cluster.clusterArn],
-      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/DataFabricStack*`]
+      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/data-fabric-security*`]
     }
 
     return LambdaDeploymentPolicies.createDeployPolicy(deployParameters);
   }
 
-  createDestroyPolicy(props: ImmutaStackProps): iam.Policy {
+  createDestroyPolicy(props: ImmutaStackProps): iam.PolicyDocument {
     let destroyParameters: LambdaDestroyParameters = {
       scope: this,
       resourceName: this.immutaId('destroy-policy'),
       clusterResources: [props.cluster.clusterArn],
-      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/DataFabricStack*`],
+      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/data-fabric-security*`],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
       ],
-      route53Resources: [`arn:${props.partition}:route53:::hostedzone/${props.hostedZoneId}`],
-      projectResources: [`arn:${props.partition}:codebuild:${props.env.region}:${props.env.account}:project/UninstallImmuta`]
+      route53Resources: [`arn:${props.partition}:route53:::hostedzone/${props.hostedZoneId}`]
     }
 
-    return LambdaDeploymentPolicies.createDeployPolicy(destroyParameters);
+    const policy = LambdaDeploymentPolicies.createDestroyPolicy(destroyParameters);
+
+    return policy;
   }
 
   createDeployFunction(props: ImmutaStackProps): lambda.Function {
+    const immutaDeployRole = new iam.Role(this, `${this.immutaId}-deploy-role`, {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'Role to deploy Immuta',
+      inlinePolicies: {
+        DeployPolicy: this.createDeployPolicy(props)
+      }
+    });
+
     const immutaDeployFunction = new lambda.Function(this, this.installName, {
       functionName: this.installName,
       description: "Lambda function that installs Immuta",
+      role: immutaDeployRole,
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
@@ -108,9 +116,18 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
   }
 
   createDestroyFunction(props: ImmutaStackProps): lambda.Function {
+    const immutaDestroyRole = new iam.Role(this, `${this.immutaId}-destroy-role`, {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'Role to destroy Immuta',
+      inlinePolicies: {
+        DestroyPolicy: this.createDestroyPolicy(props)
+      }
+    });
+
     const immutaDestroyFunction = new lambda.Function(this, this.uninstallName, {
       functionName: this.uninstallName,
       description: "Lambda function that uninstalls Immuta",
+      role: immutaDestroyRole,
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
@@ -118,6 +135,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.uninstallStr}.zip`)),
       environment: {
         'NAMESPACE': `${this.namespace}`,
+        'IMMUTA_USERNAME': `${props.immuta.username}`,
+        'IMMUTA_PASSWORD': `${props.immuta.password}`,
         'CLUSTER_NAME': props.cluster.clusterName,
         'CLUSTER_ADMIN_ROLE': props.cluster.adminRole.roleArn,
         'LAMBDA_SOURCE_FILE': `./${this.uninstallStr}.sh`,

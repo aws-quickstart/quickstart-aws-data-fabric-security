@@ -19,6 +19,9 @@ export class MainStack extends Stack {
     const commonName = "data-fabric-security";
     const mainId = (id: string) => `${commonName}-${id}`;
 
+    let immutaStack: Stack;
+    let radiantlogicStack: Stack;
+
     const dataFabricCoreStack = new DataFabricSecurityStack(this, mainId('core-stack'), {
       env: props.env,
       prefix: commonName,
@@ -45,7 +48,7 @@ export class MainStack extends Stack {
     const eksClusterStack = eksBlueprintsStack.getStack();
 
     if (Config.Current.Immuta.Deploy) {
-      new ImmutaStack(eksClusterStack, mainId('immuta-stack'), {
+      immutaStack = new ImmutaStack(eksClusterStack, mainId('immuta-stack'), {
         env: props.env, 
         prefix: commonName,
         vpc: dataFabricCoreStack.vpc,
@@ -72,10 +75,13 @@ export class MainStack extends Stack {
           },
         }
       });
+
+      // Add dependency
+      eksClusterStack.addDependency(immutaStack)
     }
     
     if (Config.Current.RadiantLogic.Deploy) {
-      new RadiantLogicStack(eksClusterStack, mainId('radiant-logic-stack'), {
+      radiantlogicStack = new RadiantLogicStack(eksClusterStack, mainId('radiantlogic-stack'), {
         env: props.env, 
         prefix: commonName,
         vpc: dataFabricCoreStack.vpc,
@@ -90,6 +96,9 @@ export class MainStack extends Stack {
           password: Config.Current.RadiantLogic.RootPassword
         }
       });
+
+      // Add dependency
+      eksClusterStack.addDependency(radiantlogicStack)
     }
 
     // Supress cdk-nag findings

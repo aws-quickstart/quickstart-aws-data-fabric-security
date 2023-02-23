@@ -36,11 +36,9 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     this.uninstallName = this.radiantlogicId(this.uninstallStr);
 
     const radiantlogicDeploy = this.createDeployFunction(props);
-    radiantlogicDeploy.role?.attachInlinePolicy(this.createDeployPolicy(props));
     props.cluster.adminRole.grantAssumeRole(radiantlogicDeploy.role!);
 
     const radiantlogicDestroy = this.createDestroyFunction(props);
-    radiantlogicDestroy.role?.attachInlinePolicy(this.createDestroyPolicy(props));
     props.cluster.adminRole.grantAssumeRole(radiantlogicDestroy.role!);
 
     this.createBootstrap(radiantlogicDeploy, radiantlogicDestroy);
@@ -48,38 +46,48 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     CdkNagSuppressions.createCommonCdkNagSuppressions(this, this.namespace);
   }
 
-  createDeployPolicy(props: RadiantLogicStackProps): iam.Policy {
+  createDeployPolicy(props: RadiantLogicStackProps): iam.PolicyDocument {
     let deployParameters: LambdaDeployParameters = {
       scope: this,
       resourceName: this.radiantlogicId('deploy-policy'),
       clusterResources: [props.cluster.clusterArn],
-      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/DataFabricStack*`]
+      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/data-fabric-security*`]
     }
 
     return LambdaDeploymentPolicies.createDeployPolicy(deployParameters);
   }
 
-  createDestroyPolicy(props: RadiantLogicStackProps): iam.Policy {
+  createDestroyPolicy(props: RadiantLogicStackProps): iam.PolicyDocument {
     let destroyParameters: LambdaDestroyParameters = {
       scope: this,
       resourceName: this.radiantlogicId('destroy-policy'),
       clusterResources: [props.cluster.clusterArn],
-      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/DataFabricStack*`],
+      assumeRoleResources: [`arn:${props.partition}:iam::${props.env.account}:role/data-fabric-security*`],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
       ],
-      route53Resources: [`arn:${props.partition}:route53:::hostedzone/${props.hostedZoneId}`],
-      projectResources: [`arn:${props.partition}:codebuild:${props.env.region}:${props.env.account}:project/UninstallImmuta`]
+      route53Resources: [`arn:${props.partition}:route53:::hostedzone/${props.hostedZoneId}`]
     }
 
-    return LambdaDeploymentPolicies.createDeployPolicy(destroyParameters);
+    const policy = LambdaDeploymentPolicies.createDestroyPolicy(destroyParameters);
+
+    return policy;
   }
 
   createDeployFunction(props: RadiantLogicStackProps): lambda.Function {
+    const radiantlogicDeployRole = new iam.Role(this, `${this.radiantlogicId}-deploy-role`, {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'Role to deploy Radiant Logic',
+      inlinePolicies: {
+        DeployPolicy: this.createDeployPolicy(props)
+      }
+    });
+
     const radiantlogicDeployFunction = new lambda.Function(this, this.installName, {
       functionName: this.installName,
       description: "Lambda function that installs Radiant Logic",
+      role: radiantlogicDeployRole,
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
@@ -100,9 +108,18 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
   }
 
   createDestroyFunction(props: RadiantLogicStackProps): lambda.Function {
+    const radiantlogicDestroyRole = new iam.Role(this, `${this.radiantlogicId}-destroy-role`, {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'Role to destroy Radiant Logic',
+      inlinePolicies: {
+        DestroyPolicy: this.createDestroyPolicy(props)
+      }
+    });
+
     const radiantlogicDestroyFunction = new lambda.Function(this, this.uninstallName, {
       functionName: this.uninstallName,
       description: "Lambda function that uninstalls Radiant Logic",
+      role: radiantlogicDestroyRole,
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],

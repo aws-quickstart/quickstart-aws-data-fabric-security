@@ -3,8 +3,7 @@ import { LambdaDeployParameters, LambdaDestroyParameters } from '../interface/la
 
 export class LambdaDeploymentPolicies {
   static createDeployPolicy(parameters: LambdaDeployParameters) {
-    const deployPolicy = new iam.Policy(parameters.scope, parameters.resourceName, {
-      policyName: parameters.resourceName,
+    const deployPolicy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
           actions: ["eks:*"],
@@ -25,15 +24,18 @@ export class LambdaDeploymentPolicies {
   }
 
   static createDestroyPolicy(parameters: LambdaDestroyParameters) {
-    const destroyPolicy = new iam.Policy(parameters.scope, parameters.resourceName, {
-      policyName: parameters.resourceName,
+    const destroyPolicy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
-          actions: ["eks:DescribeCluster"],
+          actions: ["eks:*"],
           resources: parameters.clusterResources,
         }),
         new iam.PolicyStatement({
           actions: ["sts:AssumeRole"],
+          resources: parameters.assumeRoleResources,
+        }),
+        new iam.PolicyStatement({
+          actions: ["iam:PassRole"],
           resources: parameters.assumeRoleResources,
         }),
         new iam.PolicyStatement({
@@ -45,10 +47,6 @@ export class LambdaDeploymentPolicies {
             "route53:*"
           ],
           resources: parameters.route53Resources,
-        }),
-        new iam.PolicyStatement({
-          actions: ["codebuild:DeleteProject"],
-          resources: parameters.projectResources
         }),
       ],
     });

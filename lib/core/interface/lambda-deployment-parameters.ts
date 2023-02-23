@@ -14,5 +14,4 @@ export interface LambdaDestroyParameters {
   assumeRoleResources: string[];
   logResources: string[];
   route53Resources: string[];
-  projectResources: string[];
 }

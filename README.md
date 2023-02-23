@@ -32,7 +32,8 @@ This project deploys the Data Fabric Solution which includes the EKS cluster, Im
 4. Bootstrap CDK. <br />
 `cdk bootstrap aws://<ACCOUNT_ID>/<REGION>`
 4. Deploy solution by running script. <br />
-`./dfs-solution-install.sh`
+`./dfs-solution-install.sh` <br /><br />
+**Note:** It takes about 20 minutes to deploy the solution.
 
 ### Accessing the Solution
 UI portals for Immuta and Radiant Logic can be accessed by navigating to the endpoints listed below on a browser. (Note: Replace `example.com` with your domain name that was used during deployment.)
@@ -84,9 +85,20 @@ The Identity Manager is an offering in Immuta that provides "authentication and 
 
 For more details on adding identity sources and configuring global profiles, visit the [Radiant Logic Guide](docs/RADIANT_LOGIC_GUIDE.md).
 
-### Cleanup
-1. Destroy solution using CDK <br />
-`cdk destroy`
+### Uninstall Solution
+To remove the solution, you will need to run the Lambda functions to uninstall Immuta and Radiant Logic and then run the uninstall script.
+#### Step 1: Run the Lambda `uninstall` functions for Immuta (`data-fabric-security-immuta-uninstall`) and Radiant Logic (`data-fabric-security-radiantlogic-uninstall`). Follow the steps for Immuta:
+1. Navigate to the Lambda Functions dashboard on the AWS Console
+2. Select `data-fabric-security-immuta-uninstall` function
+3. Under `Code` section, click on the `Test` button to create a test:
+   1. Enter an **Event Name** for the test
+   2. Click `Create`
+4. Click on the `Test` button to run a test
+5. Repeat steps 1-4 for `data-fabric-security-radiantlogic-uninstall`
+
+#### Step 2: Remove the Deployment Stacks
+1. Run the uninstall script to remove the solution. <br />
+`./dfs-solution-uninstall.sh`
 
 ### Deployment Configuration
 The deployment configuration for Data Fabric Security is defined in `<data-fabric-security-home>/config/dev.yaml`. This YAML file must be updated with all necessary values for the solution to be deployed successfully.
