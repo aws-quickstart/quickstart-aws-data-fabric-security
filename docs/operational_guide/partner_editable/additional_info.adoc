@@ -1,0 +1,239 @@
+== Radiant Logic Guide
+
+The purpose of this guide it to provide additional instructions to get started with Radiant Logic. For more advanced instructions and implementations, please refer to the https://support.radiantlogic.com/hc/en-us[Radiant Logic Documentation]
+
+=== Logging in
+
+To connect to Radiant Logic you must either connect from inside the environment (Bastion Host) or configure your local DNS to point the Radiant Logic hostname to the Load Balancer for Radiant Logic.
+
+. Using a browser, navigate to one of the following:
++
+[,bash]
+----
+http://radiantlogic.example.com:7070 
+https://radiantlogic.example.com:7171 
+----
++
+. Log in using the directory manager account 
++
+*Username*: cn=directory manager 
++
+*Password*: Password set in dev.yaml file during deployment 
+
+image::../docs/operational_guide/images/Radiant-logic-login.PNG[RadiantLogicLogin]
+
+=== Identity Sources
+
+Radiant Logic supports multiple data sources from LDAP (eg. Active Directory), DB (eg. MySQL), and Custom data store types (eg. REST API).
+
+==== Adding an LDAP Store - Active Directory
+
+This is a basic Active Directory LDAP data source configuration, for more information and options please refer to the Radiant Logic documentation.
+
+. Create a service account in your Active Directory, this is just a normal user account and no extra permissions are necessary.
+. Click on *Settings* -> *Server Backend* -> *LDAP Data Source* -> *Add*
+. Fill out the *Add LDAP Data Source* form:
+ .. *Data Source Name*: A Friendly name for the directory
+ .. *Host Name*: Fully Qualified Domain Name for your AD (if you use a DC name or IP address the DC will be a single point of failure)
+ .. *Bind DN*: The distinguishedName of the service account created in step 1
+ .. *Base DN*: the distinguishedName of the OU your identities are located in (can be a top level OU with nested OUs)
+ .. *Data Source Type*: AD2008
+ .. *Port*: 389 for plain text or 636 for SSL (if using SSL, also check the box for SSL)
+ .. *Bind Password*: the password for the service account created in step 1
+. Click on *test Connection* to verify your configuration/network connectivity
+. Click on *Save*
+
+example config:
+
+image::../docs/operational_guide/images/active-directory-ldap-config.PNG[ADldapConfig]
+
+==== Adding additional LDAP Stores
+
+. Create a service account in your Directory
+. Click on *Settings* -> *Server Backend* -> *LDAP Data Source* -> *Add*
+. Fill out the *Add LDAP Data Source* form:
+.. *Data Source Name*: A Friendly name for the directory
+.. *Host Name*: Fully qualified host name or IP address for your directory
+.. *Bind DN*: The distinguishedName of the service account created in step 1
+.. *Base DN*: the distinguishedName of the OU your identities are located in (can be a top level OU with nested OUs)
+.. *Data Source Type*: Select the Directory type or LDAP if your particular directory is not listed
+.. *Port*: 389 for plain text or 636 for SSL
+.. *Bind Password*: the password for the service account created in step 1
+. Click on *test Connection* to verify your configuration/network connectivity
+. Click on *Save*
+
+==== Adding a Database Store
+
+. Click on *Settings* -> *Server Backend* -> *DB Data Source* -> *Add*
+. Fill out the *Add DB Data Source* form
+. Click on *Save*
+
+&nbsp;&nbsp;&nbsp;&nbsp;example config:
+
+image::../docs/operational_guide/images/sql-connection.PNG[sqlConnection]
+
+==== Adding a Custom Store
+
+. Click on *Settings* -> *Server Backend* -> *Custom Data Source* -> *Add Custom*
+. Fill out the *Add Custom Data Source* form
+. Click on *Save*
+
+=== Global Identity
+
+Global Identity is a feature within Radiant Logic that allows you to correlate users from various identity sources and generates a Global Profile that defines the final view of the correlated identity sources.
+
+Steps to create a global identity:
+
+. Create a global identity project
+. Add an identity source to the project
+. Upload and sync the data sources in the project
+
+==== Create a Global Identity Project
+
+. Click on *Wizards* -> *Global Identity Builder* -> *New Project*
+. Complete the *Project* form
+. On the right side, add the Custom Attributes you are interested in including as part of the Global Profile
+. Input your Attribute value in the text field and select *Add Custom Attribute* for each custom attribute
+. Click on *Save*
+
+example config:
+
+
+image::../docs/operational_guide/images/global-identity-setup.PNG[GlobalIdentitySetup]
+
+==== Add an Identity Source to Project - AD example
+
+. Click on *Define a new Identity Source*
+. Complete the Identity Source form:
+.. *Data Source*: Select your previously configured Identity Store
+.. *Identity Object*: user
+.. *Base DN*: Select previously created base DN during ldap config
+.. *Display/Search Attribute*: sAMAccountName
+. Click on *Save*
+. In *Mapping Definitions*, click on *Auto* to auto map attributes
+. Click *OK* when the warning pops up
+. Click on *Save* and *Save* again
+
+example config:
+
+image::../docs/operational_guide/images/ad-identity-source.PNG[ADIdentitySource]
+
+==== Upload and Sync Data Sources
+
+. Click on *Upload/Sync* in the Global Identity Project
+. Click on *Upload All* (Note: You can use Bulk Upload or Single Upload)
+. On successful sync, the Status should be in FINISHED state
+
+==== View Global Identities
+
+. In the global profile, click on *Identities Browser*
+
+
+== Immuta Guide
+The purpose of this guide it to provide additional instructions to get started with Immuta. For more advanced instructions and implementations, please refer to the https://documentation.immuta.com[Immuta Documentation]
+
+=== Initial setup
+
+==== Log in to Immuta
+[%hardbreaks]
+. Using a browser, connect to: 
++
+https://immuta.datafabric.aws/
+. You will be prompted to create an admin account. 
++
+Provide an email address and password for the new admin account.
+. You will now be prompted for a license, copy/paste your immuta license into the input box
++
+image::../docs/operational_guide/images/immuta-add-license-key.png[LicenseInput]
++
+. Click Save
+. On successful configuration of the license key, you should see that your license has been added
++
+image::../docs/operational_guide/images/immuta-view-license-key.png[LicenseView]
+
+=== Data Sources
+
+Immuta supports the ability to connect to query-backed and object-based data sources.
+
+==== Adding a Data Source
+
+The following are steps to add a data source:
+
+1. On the left side navigation, click on *Data Sources*
+2. Click on *+ New Data Source*
+3. Select the *Storage Technology* of your data source
+4. Complete *Connection Information* of the data source
+5. Test the connection
+6. Complete the *Connection Population*
+7. Complete the *Basic Information*
+8. Opt to set up *Schema Monitoring* and *Advanced Options*
+
+More details on data sources can be found here:
+
+- https://documentation.immuta.com/4-connecting-data/creating-data-sources/storage-technologies/general/query-backed-tutorial/[Query-backed Data Sources]
+
+- https://documentation.immuta.com/4-connecting-data/creating-data-sources/storage-technologies/general/object-backed-tutorial/[Object-backed Data Sources]
+
+=== Policies
+
+Policies are managed and applied to data sources in Immuta to restrict access to data.
+
+Types of policies defined in Immuta:
+[%hardbreaks]
+- Global Policies - applied to all data sources across an organization
+- Global Subscription Policies - applied to subscribers
+- Global Data Policies - applied to all data users
+- Local Policies - applied to a specific data source
+
+==== Creating a Global Subscription Policy
+
+. On the left side navigation, click on *Policies*
+. Select *Subscription Policies*
+. Click on *+ Add Subscription Policy*
+. Complete the Global Subscription Policy Builder form
+. Click on *Create Policy*
+
+Tutorial for https://documentation.immuta.com/3-writing-global-policies-for-compliance/global-policy-builder/subscription-policy-tutorial/[Global Policy Subscription]
+
+==== Creating a Global Data Policy
+
+. On the left side navigation, click on *Policies*
+. Select *Data Policies*
+. Click on *+ Add Data Policy*
+. Complete the Global Data Policy Builder form
+. Click on *Create Policy*
+
+Tutorial for https://documentation.immuta.com/3-writing-global-policies-for-compliance/global-policy-builder/data-policy-tutorial/[Global Data Policy]
+
+==== Creating a Local Policy
+
+. On the left side navigation, click on *Data Sources*
+. Select the data source you would like to create a local policy for
+. Select *Policies*
+. Click on *+ New Policy*
+. Complete the Policy Builder form 
++
+NOTE: You will need to log into the users that have the attributes you need before Immuta can populate the attributes
++
+. Click on *Create*
+
+Tutorial for https://documentation.immuta.com/2022.4/4-connecting-data/managing-data-sources/local-policy-builder/[Local Policy]
+
+=== GovCloud Region Support
+
+Immuta comes with standard regions support out of the box so you will need to set up advanced configuration to enable the service endpoints (eg. S3 data sources). Follow the steps below for GovCloud region support:
+
+. Go to *App Settings* on the left hand navigation
+. Expand *Advanced Settings*
+. Click on *Advanced Configuration*
+. Modify the *Advanced Configuration* textfield with the following:
++
+[,bash]
+----
+client:
+  awsRegions:
+    - us-gov-east-1
+    - us-gov-west-1
+----
++
+. Click *Save*

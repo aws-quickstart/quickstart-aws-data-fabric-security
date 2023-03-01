@@ -1,0 +1,1 @@
+The steps in this guide are a brief introduction to the configuration of Radiant Logic and Immuta products. These are not intended to replace the documentation provided by the vendors and do not cover all use cases. For additional configuration and administration steps, please refer to the Radiant Logic and/or Immuta documentation. 

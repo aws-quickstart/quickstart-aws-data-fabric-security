@@ -1,3 +1,24 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+
+=== Uninstall Solution
+To remove the solution, you will need to run the Lambda functions to uninstall Immuta and Radiant Logic and then run the uninstall script.
+
+==== Step 1: Run the Lambda *uninstall* functions for Immuta and Radiant Logic:
+
+. Navigate to the Lambda Functions dashboard on the AWS Console
+. Select *data-fabric-security-immuta-uninstall* function
+. Under *Code* section, click on the *Test* button to create a test:
+   1. Enter an Event Name for the test
+   2. Click *Create*
+. Click on the *Test* button to run a test
+. Repeat steps 1-4 for *data-fabric-security-radiantlogic-uninstall*
+
+==== Step 2: Remove the Deployment Stacks
+
+1. Run the uninstall script to remove the solution. 
+[,bash]
+----
+./dfs-solution-uninstall.sh
+----
