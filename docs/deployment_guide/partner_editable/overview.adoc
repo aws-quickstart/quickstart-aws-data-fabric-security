@@ -1,5 +1,7 @@
 This guide covers the information you need to deploy the {partner-product-name} Partner Solution in the AWS Cloud.
 
-// For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
+The Data Fabric Security on AWS solution delivers scalable data security and governance, enabling increased interoperability, modernization, and informed decision-making across a myriad of organizations and environments.  The solution is designed to address the challenges that many organizations face when attempting to securely share data across decentralized identities and centralized repositories.  The foundation of enabling customers like the Department of Defense to engage in decentralized data-centric sharing is to provision a set of common security services.  Data Fabric Security on AWS enables mission owners to quickly deploy a security substrate composed of centralized data governance and identity aggregation layers for secure interoperability across multiple security and operational domains.
+
+For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
 
 // For information about using this Partner Solution for migrations, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/migration/index.html[Migration Guide^].

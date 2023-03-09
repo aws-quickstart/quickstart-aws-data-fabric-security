@@ -7,7 +7,7 @@ AWS Cloud.
 
 [#architecture1]
 .Partner Solution architecture for {partner-product-short-name} on AWS
-image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
+image::../docs/deployment_guide/images/data-fabric-pod-breakdown.png[Architecture]
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
@@ -17,12 +17,15 @@ best practices, to provide you with your own virtual network on AWS.*
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound
 internet access for resources in the private subnets.*
-** A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in public and private subnets.*
 * In the private subnets:
-** <item>.
-** <item>.
+** A 3 node Amazon Elastic Kubernetes (EKS) cluster, containing highly-available deployments of Immuta and Radiant Logic.  
+** AWS VPC Endpoints for required AWS services, keeping network traffic between the EKS cluster and AWS services within the VPC. 
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
-* <describe any additional components>.
+* An AWS classic load balancer for the Immuta service running on the EKS cluster
+* An AWS classic load balancer for the Radiant Logic service running on the EKS cluster
+* AWS Lambda Functions for intalling Radiant Logic and Immuta
+* AWS CloudWatch Log Groups
+* Secrets in AWS Secrets Manager
+* Amazon Route53 private hosted zone and resolvers  
 
-[.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
+[.small]#* If desired, during the deployment an existing VPC and subnets may be used. The existing VPC must include 2 private subnets in seperate Availability Zones.#
