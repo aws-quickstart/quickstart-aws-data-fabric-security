@@ -39,7 +39,7 @@ NOTE: The Immuta passwords required in step 3 of the install instructions will b
 +
 [,bash]
 ----
-   npm install
+   npm ci
 ----
 . Open the file \<path>/data-fabric/config/dev.yaml for editing and set the variables for your environment.
 + 
@@ -48,8 +48,7 @@ See [Deployment Configuration](#deployment-configuration) section for additional
 +
 [,bash]
 ----
-   chmod +x dfs-staging.sh 
-   ./dfs-staging.sh 
+   bash dfs-staging.sh 
 ----
 . Bootstrap CDK. 
 +
@@ -61,8 +60,7 @@ cdk bootstrap aws://<ACCOUNT_ID>/<REGION>
 +
 [,bash]
 ----
-   chmod +x dfs-solution-install.sh 
-   ./dfs-solution-install.sh 
+   bash dfs-solution-install.sh 
 ----
 + 
 NOTE: It takes about 20 minutes to deploy the solution.

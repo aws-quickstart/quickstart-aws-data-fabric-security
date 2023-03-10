@@ -24,7 +24,8 @@ image::../docs/operational_guide/images/Radiant-logic-login.PNG[RadiantLogicLogi
 
 === Identity Sources
 
-Radiant Logic supports multiple data sources from LDAP (eg. Active Directory), DB (eg. MySQL), and Custom data store types (eg. REST API).
+Radiant Logic supports multiple data sources from LDAP (eg. Active Directory), DB (eg. MySQL), and Custom data store types (eg. REST API). 
+*All Data Sources are optional, but in order to setup a Global Identity you need a minimum of one Identity Store.* 
 
 ==== Adding an LDAP Store - Active Directory
 
@@ -93,7 +94,7 @@ Steps to create a global identity:
 . Click on *Wizards* -> *Global Identity Builder* -> *New Project*
 . Complete the *Project* form
 . On the right side, add the Custom Attributes you are interested in including as part of the Global Profile
-. Input your Attribute value in the text field and select *Add Custom Attribute* for each custom attribute
+. Input your Attribute value in the text field and select *Add Custom Attribute* for each custom attribute you wish to include
 . Click on *Save*
 
 example config:
@@ -108,7 +109,7 @@ image::../docs/operational_guide/images/global-identity-setup.PNG[GlobalIdentity
 .. *Data Source*: Select your previously configured Identity Store
 .. *Identity Object*: user
 .. *Base DN*: Select previously created base DN during ldap config
-.. *Display/Search Attribute*: sAMAccountName
+.. *Display/Search Attribute*: mail
 . Click on *Save*
 . In *Mapping Definitions*, click on *Auto* to auto map attributes
 . Click *OK* when the warning pops up
@@ -138,11 +139,12 @@ The purpose of this guide it to provide additional instructions to get started w
 [%hardbreaks]
 . Using a browser, connect to: 
 +
-https://immuta.datafabric.aws/
+https://immuta.example.com/ using the domian name specified when deploying DFS
 . You will be prompted to create an admin account. 
 +
 Provide an email address and password for the new admin account.
-. You will now be prompted for a license, copy/paste your immuta license into the input box
+. You will now be sent to the licenses page, click *Add License Key* 
+. Copy/paste your immuta license into the input box
 +
 image::../docs/operational_guide/images/immuta-add-license-key.png[LicenseInput]
 +
@@ -150,6 +152,29 @@ image::../docs/operational_guide/images/immuta-add-license-key.png[LicenseInput]
 . On successful configuration of the license key, you should see that your license has been added
 +
 image::../docs/operational_guide/images/immuta-view-license-key.png[LicenseView]
+
+=== Configure Identity Manager
+The Identity Manager is an offering in Immuta that provides “authentication and fine-grained user entitlement”. Since we are using Radiant Logic as the Identity Provider for Data Fabric, we will need to configure Immuta’s Identity Manager. Follow the steps below to configure the Identity Manager:
+
+. On the left side navigation, click on App Settings
+. Click *1 Identity Management*
+. Inside Identity and Access Management (IAM), click on *Add IAM*
++
+image::../docs/operational_guide/images/immuta-iam.PNG[ImmutaIam]
++
+. Enter “RadiantLogic” for Display Name and select “LDAP/Active Directory” as Identity Provider Type
+. The form will expand after the selection. Complete the remaining form as shown below:
+.. Complete the *Credentials* and *Options*
++
+image::../docs/operational_guide/images/immuta-to-radiantlogic.png[ImmutaToRadiantLogic]
++
+.. Check *Sync attributes from LDAP/Active Directory to Immuta*
+... Add all attrubutes to be used by Immuta by clicking *Add Another Attribute* and entering the attribute information for each attribute. Be sure to click *Create: <attribute name>* in the dropdown for Immuta Attribute Key field after you enter the attribute name for any new attributes being imported
+.. Check *Make Default IAM*
+.. Complete the process to *Test Connection*, *Test User Login*, and *Test LDAP Sync*. Once all tests are successful, click on Save (left panel).
++
+image::../docs/operational_guide/images/immuta-attribute-mapping.PNG[ImmutaAttributeMapping]
+
 
 === Data Sources
 
@@ -237,3 +262,6 @@ client:
 ----
 +
 . Click *Save*
+
+
+
