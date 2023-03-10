@@ -1,1 +1,5 @@
+Data Fabric Security is intended to be configured to support numerous use cases and integrate a variety of Identity stores and data stores. The diagram below shows an example of how a number of data stores and identity stores can be integrated with Data Fabric Security.  
+
+image::../docs/deployment_guide/images/extended-architecture.pptx[Extended-Architecture]
+
 The steps in this guide are a brief introduction to the configuration of Radiant Logic and Immuta products. These are not intended to replace the documentation provided by the vendors and do not cover all use cases. For additional configuration and administration steps, please refer to the Radiant Logic and/or Immuta documentation. 
