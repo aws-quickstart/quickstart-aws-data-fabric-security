@@ -3,7 +3,7 @@
 == Predeployment steps
 
 [%hardbreaks]
-. Install Nodejs 10.13.0 or later 
+. Install Nodejs 18.0.0 or later 
 .. example: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Install Nodejs on an EC2 instance]
 . Install AWS CDK CLI using Node Package Manager(npm)
 +
