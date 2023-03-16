@@ -169,7 +169,7 @@ image::../docs/operational_guide/images/immuta-iam.PNG[ImmutaIam]
 image::../docs/operational_guide/images/immuta-to-radiantlogic.png[ImmutaToRadiantLogic]
 +
 .. Check *Sync attributes from LDAP/Active Directory to Immuta*
-... Add all attrubutes to be used by Immuta by clicking *Add Another Attribute* and entering the attribute information for each attribute. Be sure to click *Create: <attribute name>* in the dropdown for Immuta Attribute Key field after you enter the attribute name for any new attributes being imported
+... Add all attrubutes to be used by Immuta by clicking *Add Another Attribute* and entering the attribute information for each attribute. 
 .. Check *Make Default IAM*
 .. Complete the process to *Test Connection*, *Test User Login*, and *Test LDAP Sync*. Once all tests are successful, click on Save (left panel).
 +

@@ -41,7 +41,7 @@ NOTE: The Immuta passwords required in step 3 of the install instructions will b
 ----
    npm ci
 ----
-. Open the file \<path>/quickstart-aws-data-fabric-security/config/dev.yaml for editing and set the variables for your environment.
+. Open the file <path>/quickstart-aws-data-fabric-security/config/dev.yaml for editing and set the variables for your environment.
 + 
 See [Deployment Configuration](#deployment-configuration) section for additional details.
 . Run the DFS Preparation script 
