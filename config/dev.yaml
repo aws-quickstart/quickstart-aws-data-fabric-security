@@ -1,0 +1,42 @@
+AWSAccountID: "ACCOUNT_ID"
+AWSRegion: "REGION"
+
+Domain: "DOMAIN"
+
+Networking:
+  VpcId: "VPC_ID"
+  SubnetA: "SUBNET_ID_A"
+  SubnetB: "SUBNET_ID_B"
+  MaxAZs: 2                                     # Default: 2 (Valid inputs are 2 or 3)
+
+EKS:
+  EKSAdminRole: "EKS_ADMIN_ROLE"
+  EKSEndpointAccess: ""      # Default: "" (Valid inputs are "PUBLIC", "PRIVATE", or "" for both)
+  InstanceType: "INSTANCE_TYPE"                 # Default: "m5.large"
+  ClusterSize: 3
+
+Immuta:
+  Deploy: true
+  ChartVersion: "4.9.5"
+  ImmutaVersion: "2022.4.3"
+  ImageTag: "2022.4.3"
+  Instance:
+    Username: "USERNAME"
+    Password: "PASSWORD"
+  Database:
+    ImmutaDBPassword: "SECRET"
+    ImmutaDBSuperUserPassword: "SECRET"
+    ImmutaDBReplicationPassword: "SECRET"
+    ImmutaDBPatroniApiPassword: "SECRET"
+  Query:
+    ImmutaQEPassword: "SECRET"
+    ImmutaQESuperUserPassword: "SECRET"
+    ImmutaQEReplicationPassword: "SECRET"
+    ImmutaQEPatroniApiPassword: "SECRET"
+
+RadiantLogic:
+  Deploy: true
+  ZkImageTag: "3.5.8"
+  FidImageTag: "7.4.4"
+  License: "LICENSE"
+  RootPassword: "PASSWORD"

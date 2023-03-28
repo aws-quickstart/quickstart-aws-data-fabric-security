@@ -1,0 +1,189 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "AWSAccountID": {
+            "type": "string"
+        },
+        "AWSRegion": {
+            "type": "string"
+        },
+        "Domain": {
+            "type": "string"
+        },
+        "Networking": {
+            "$ref": "#/definitions/Networking"
+        },
+        "EKS": {
+            "$ref": "#/definitions/EKS"
+        },
+        "Immuta": {
+            "$ref": "#/definitions/Immuta"
+        },
+        "Database": {
+            "$ref": "#/definitions/Database"
+        },
+        "Query": {
+            "$ref": "#/definitions/Query"
+        }
+    },
+    "required": [
+        "AWSAccount",
+        "AWSRegion",
+        "Domain",
+        "EKS",
+        "Immuta",
+        "Database",
+        "Query"
+    ],
+    "definitions": {
+        "BuildConfig": {},
+        "Networking": {
+            "type": "object",
+            "properties": {
+                "VpcId": {
+                    "type": "string"
+                },
+                "SubnetA": {
+                    "type": "string"
+                },
+                "SubnetB": {
+                    "type": "string"
+                },
+                "MaxAZs": {
+                    "type": "integer",
+                    "minimum": 2,
+                    "maximum": 3
+                }
+            }
+        },
+        "EKS": {
+            "type": "object",
+            "properties": {
+                "EKSAdminRole": {
+                    "type": "string"
+                },
+                "EKSEndpointAccess": {
+                    "type": "string"
+                },
+                "InstanceType": {
+                    "type": "string"
+                },
+                "ClusterSize": {
+                    "type": "number",
+                    "minimum": 3
+                }
+            }
+        },
+        "Immuta": {
+            "type": "object",
+            "properties": {
+                "Deploy": {
+                    "type": "boolean"
+                },
+                "ChartVersion": {
+                    "type": "string",
+                    "default": "4.9.5"
+                },
+                "ImmutaVersion": {
+                    "type": "string",
+                    "default": "2022.4.3"
+                },
+                "ImageTag": {
+                    "type": "string",
+                    "default": "2022.4.3"
+                },
+                "Instance": {
+                    "type": "object",
+                    "$ref": "#/definitions/Instance"
+                },
+                "Database": {
+                    "type": "object",
+                    "$ref": "#/definitions/Database"
+                },
+                "Query": {
+                    "type": "object",
+                    "$ref": "#/definitions/Query"
+                }
+            },
+            "required": [
+                "Deploy",
+                "Instance",
+                "Database",
+                "Query"
+            ]
+        },
+        "RadiantLogic": {
+            "type": "object",
+            "properties": {
+                "Deploy": {
+                    "type": "boolean"
+                },
+                "ZkImageTag": {
+                    "type": "string",
+                    "default": "3.5.8"
+                },
+                "FidImageTag": {
+                    "type": "string",
+                    "default": "7.4.4"
+                },
+                "License": {
+                    "type": "string"
+                },
+                "RootPassword": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Deploy",
+                "License",
+                "RootPassword"
+            ]
+        },
+        "Instance": {
+            "type": "object",
+            "properties": {
+                "Username": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                }
+            }
+        },
+        "Database": {
+            "type": "object",
+            "properties": {
+                "ImmutaDBPassword": {
+                    "type": "string"
+                },
+                "ImmutaDBSuperUserPassword": {
+                    "type": "string"
+                },
+                "ImmutaDBReplicationPassword": {
+                    "type": "string"
+                },
+                "ImmutaDBPatroniApiPassword": {
+                    "type": "string"
+                }
+            }
+        },
+        "Query": {
+            "type": "object",
+            "properties": {
+                "ImmutaQEPassword": {
+                    "type": "string"
+                },
+                "ImmutaQESuperUserPassword": {
+                    "type": "string"
+                },
+                "ImmutaQEReplicationPassword": {
+                    "type": "string"
+                },
+                "ImmutaQEPatroniApiPassword": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
