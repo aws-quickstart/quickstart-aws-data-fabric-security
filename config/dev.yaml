@@ -1,18 +1,18 @@
-AWSAccountID: "ACCOUNT_ID"
-AWSRegion: "REGION"
+AWSAccountID: "123456789012"
+AWSRegion: "us-east-1"
 
-Domain: "DOMAIN"
+Domain: "company.com"
 
 Networking:
-  VpcId: "VPC_ID"
-  SubnetA: "SUBNET_ID_A"
-  SubnetB: "SUBNET_ID_B"
+  VpcId: "vpc-123456789abcdefgh"
+  SubnetA: "subnet-123456789abcdefgh"
+  SubnetB: "subnet-abcdefgh123456789"
   MaxAZs: 2                                     # Default: 2 (Valid inputs are 2 or 3)
 
 EKS:
-  EKSAdminRole: "EKS_ADMIN_ROLE"
-  EKSEndpointAccess: ""      # Default: "" (Valid inputs are "PUBLIC", "PRIVATE", or "" for both)
-  InstanceType: "INSTANCE_TYPE"                 # Default: "m5.large"
+  EKSAdminRole: "arn:aws-us-gov:iam::123456789012:role/aws-service-role/eks.amazonaws.com/EKSAdminRole"
+  EKSEndpointAccess: "PRIVATE"      # Default: "" (Valid inputs are "PUBLIC", "PRIVATE", or "" for both)
+  InstanceType: "m5.large"                 # Default: "m5.large"
   ClusterSize: 3
 
 Immuta:
@@ -38,5 +38,5 @@ RadiantLogic:
   Deploy: true
   ZkImageTag: "3.5.8"
   FidImageTag: "7.4.4"
-  License: "LICENSE"
-  RootPassword: "PASSWORD"
+  License: "\\{rlib\\}xXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  RootPassword: "Password1!"
