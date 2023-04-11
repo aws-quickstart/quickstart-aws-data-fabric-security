@@ -60,6 +60,9 @@
         "EKS": {
             "type": "object",
             "properties": {
+                "ClusterName": {
+                    "type": "string"
+                },
                 "EKSAdminRole": {
                     "type": "string"
                 },

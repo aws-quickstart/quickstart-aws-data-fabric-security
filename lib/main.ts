@@ -40,6 +40,7 @@ export class MainStack extends Stack {
       subnets: dataFabricCoreStack.subnets,
       domain: Config.Current.Domain,
       hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
+      clusterName: Config.Current.EKS.ClusterName,
       endpointAccess: Config.Current.EKS.EKSEndpointAccess,
       instanceType: Config.Current.EKS.InstanceType,
       numInstances: Config.Current.EKS.ClusterSize,

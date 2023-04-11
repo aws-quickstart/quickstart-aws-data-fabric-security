@@ -25,6 +25,7 @@ export interface EksBlueprintsStackProps extends StackProps {
   subnets: ISubnet[],
   domain: string,
   hostedZoneId: string,
+  clusterName: string,
   endpointAccess: string,
   instanceType: string,
   numInstances: number,

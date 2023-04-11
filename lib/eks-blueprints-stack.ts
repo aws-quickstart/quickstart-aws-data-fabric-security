@@ -68,6 +68,7 @@ export class EksBlueprintsStack {
     });
 
     const genericClusterProvider = new blueprints.GenericClusterProvider({
+      clusterName: props.clusterName,
       version: eks.KubernetesVersion.of('1.24'),
       endpointAccess: access,
       clusterLogging: [

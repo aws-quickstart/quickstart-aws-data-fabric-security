@@ -10,6 +10,7 @@ Networking:
   MaxAZs: 2                                     # Default: 2 (Valid inputs are 2 or 3)
 
 EKS:
+  Clustername: "data-fabric-security-eks-cluster"
   EKSAdminRole: "arn:aws-us-gov:iam::123456789012:role/aws-service-role/eks.amazonaws.com/EKSAdminRole"
   EKSEndpointAccess: "PRIVATE"      # Default: "" (Valid inputs are "PUBLIC", "PRIVATE", or "" for both)
   InstanceType: "m5.large"                 # Default: "m5.large"

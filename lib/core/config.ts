@@ -76,6 +76,7 @@ interface Networking {
 }
 
 interface EKS {
+  ClusterName: string;
   EKSAdminRole: string;
   EKSEndpointAccess: string;
   InstanceType: string;
