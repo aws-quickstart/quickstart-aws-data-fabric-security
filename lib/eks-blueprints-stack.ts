@@ -85,7 +85,7 @@ export class EksBlueprintsStack {
           amiType: eks.NodegroupAmiType.AL2_X86_64,
           instanceTypes: [new ec2.InstanceType(props.instanceType)],
           diskSize: 200,
-          nodeGroupSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+          nodeGroupSubnets: { subnets: props.subnets },
           desiredSize: props.numInstances
         }
       ]

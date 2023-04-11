@@ -46,7 +46,7 @@ export class DataFabricSecurityStack extends NestedStack {
         vpcId: props.vpc.vpcId,
         isDefault: false,
       });
-      for (let i in this.vpc.privateSubnets) {
+      for (let i in props.vpc.subnetIds) {
         this.subnets.push(Subnet.fromSubnetId(this,`subnet${i}` , props.vpc.subnetIds[i]))
       }
     }

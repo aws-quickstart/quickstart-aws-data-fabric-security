@@ -37,6 +37,7 @@ export class MainStack extends Stack {
       env: props.env,
       prefix: commonName,
       vpc: dataFabricCoreStack.vpc,
+      subnets: dataFabricCoreStack.subnets,
       domain: Config.Current.Domain,
       hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
       endpointAccess: Config.Current.EKS.EKSEndpointAccess,

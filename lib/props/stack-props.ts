@@ -1,5 +1,5 @@
 import { Environment, NestedStackProps, StackProps } from "aws-cdk-lib";
-import { ISecurityGroup, IVpc } from "aws-cdk-lib/aws-ec2";
+import { ISecurityGroup, IVpc, ISubnet } from "aws-cdk-lib/aws-ec2";
 import { Cluster } from "aws-cdk-lib/aws-eks";
 import { IRole } from "aws-cdk-lib/aws-iam";
 
@@ -22,6 +22,7 @@ export interface EksBlueprintsStackProps extends StackProps {
   env: Environment,
   prefix: string,
   vpc: IVpc,
+  subnets: ISubnet[],
   domain: string,
   hostedZoneId: string,
   endpointAccess: string,
