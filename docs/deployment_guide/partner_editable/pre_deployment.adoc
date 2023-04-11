@@ -103,9 +103,9 @@ The following tables represent the parameters that are set in the config/dev.yam
 | Description
 | Default 
 
-| VpcId     | ID of the VPC to use for the deployment (leave blank if you want to create a new VPC) | ""      
-| SubnetA   | Private subnet in AZ1 (leave blank if you want to create a new subnet)                | ""      
-| SubnetB   | Private subnet in AZ2 (leave blank if you want to create a new subnet)                | ""      
+| VpcId     | ID of the VPC to use for the deployment (leave as empty string if you want to create a new VPC) | ""      
+| SubnetA   | Private subnet in AZ1 (leave as empty string if you want to create a new subnet)                | ""      
+| SubnetB   | Private subnet in AZ2 (leave as empty string if you want to create a new subnet)                | ""      
 | MaxAZs    | Maximum availability zones                                                            | 2       
 |===
 
