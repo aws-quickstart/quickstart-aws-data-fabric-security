@@ -13,14 +13,7 @@ npm install -g aws-cdk
 ----
 + 
 For additional info see the https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html[AWS Cloud Development Kit Developer guide]
-. Install zip package
-+
-[,bash]
-----
-sudo yum install zip    # RHEL/CentOS
-sudo apt install zip    # Debian/Ubuntu
-----
-+
+
 . Load your AWS credentials into your dev environment (may be done via AWSCLI)
 . Obtain your Radiant Logic License
 . Obtain you Immuta license 
@@ -44,12 +37,6 @@ NOTE: The Immuta passwords required in step 3 of the install instructions will b
 . Open the file <path>/quickstart-aws-data-fabric-security/config/dev.yaml for editing and set the variables for your environment.
 + 
 See [Deployment Configuration](#deployment-configuration) section for additional details.
-. Run the DFS Preparation script 
-+
-[,bash]
-----
-   bash dfs-staging.sh 
-----
 . Bootstrap CDK. 
 +
 [,bash]
@@ -130,6 +117,7 @@ The following tables represent the parameters that are set in the config/dev.yam
 | Description
 | Default    
 
+| Clustername | Custom name for the EKS cluister | "data-fabric-security-eks-cluster"   
 | EKSAdminRole | Admin role ARN for EKS (This ARN must be an existing role in the account with AdminAccess permission) | ""         
 | EKSEndpointAccess | EKS endpoint access type (Valid inputs are "PUBLIC", "PRIVATE", or "" for both) | ""         
 | InstanceType      | Instance type for the EKS cluster                                               | "m5.large" 
@@ -166,9 +154,8 @@ The following tables represent the parameters that are set in the config/dev.yam
 |===
 | Parameter    | Description                                 | Default 
 | Deploy       | Boolean to deploy the component             | true    
-| ZkChartVersion | Zookeeper Chart Version                   | ""
-| FidChartVersion | FID Chart Version                        | ""
-| FidImageTagVersion | FID Cocker Image Tag                  | ""
+| ZkImageTag | Zookeeper Image Tag                   | ""
+| FidImageTag | FID Image Tag                        | ""
 | License      | License for Radiant Logic                   | ""      
 | RootPassword | Password to be used for the root admin user | ""      
 |===
