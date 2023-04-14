@@ -21,6 +21,9 @@ export class DataFabricSecurityStack extends NestedStack {
    */
   private readonly commonName: string;
 
+  /**
+   * VPC used for the stack.
+   */
   public readonly vpc: ec2.IVpc;
 
   /**
