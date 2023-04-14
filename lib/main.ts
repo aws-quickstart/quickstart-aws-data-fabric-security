@@ -10,8 +10,18 @@ import { MainStackProps } from "./props/stack-props";
 import { Config } from "./core/config";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
 
+/**
+ * Main stack to deploy the solution.
+ */
 export class MainStack extends Stack {
 
+  /**
+   * Constructor of the main solution stack.
+   * 
+   * @param scope - Parent of this stack.
+   * @param id - Construct ID of this stack.
+   * @param props - Properties of this stack.
+   */
   constructor(scope: Construct, id: string, props: MainStackProps) {
     super(scope, id, props);
 
@@ -81,7 +91,6 @@ export class MainStack extends Stack {
         }
       });
 
-      // Add dependency
       eksClusterStack.addDependency(immutaStack)
     }
     
@@ -104,14 +113,15 @@ export class MainStack extends Stack {
         }
       });
 
-      // Add dependency
       eksClusterStack.addDependency(radiantlogicStack)
     }
 
-    // Supress cdk-nag findings
     this.createCdkSuppressions();
   }
 
+  /**
+   * Suppress service role findings.
+   */
   private serviceRoleCdkNagSuppression() {
     for (const child of this.node.findAll()) {
 
@@ -128,6 +138,9 @@ export class MainStack extends Stack {
     }
   }
 
+  /**
+   * Create cdk-nag suppressions.
+   */
   private createCdkSuppressions() {
     CdkNagSuppressions.createStackCdkNagSuppressions(
       this, 

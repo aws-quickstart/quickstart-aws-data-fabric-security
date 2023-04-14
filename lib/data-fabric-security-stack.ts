@@ -7,20 +7,46 @@ import * as logs from "aws-cdk-lib/aws-logs";
 
 import { DataFabricSecurityStackProps } from "./props/stack-props";
 
+/**
+ * Data Fabric Security stack.
+ */
 export class DataFabricSecurityStack extends NestedStack {
+  /**
+   * Stack identifier.
+   */
   private readonly coreId: any;
+
+  /**
+   * Common name of the stack.
+   */
   private readonly commonName: string;
 
   public readonly vpc: ec2.IVpc;
+
+  /**
+   * Subnets used bby the stack.
+   */
   public readonly subnets: ec2.ISubnet[]=[];
+
+  /**
+   * Private hosted zone of the stack.
+   */
   public readonly privateZone: route53.IPrivateHostedZone;
 
+  /**
+   * Constructor of the Data Fabric Solution stack.
+   * 
+   * @param scope - Parent of this stack.
+   * @param id - Construct ID of this stack.
+   * @param props - Properties of this stack.
+   */
   constructor(scope: Construct, id: string, props: DataFabricSecurityStackProps) {
     super(scope, id, props);
 
     this.coreId = (id: string) => `${props.prefix}-${id}`;
     this.commonName = props.prefix;
     
+    // Create a VPC if there was no VPC ID provided.
     if(props.vpc.vpcId == "" && !props.vpc.vpcId) {
       const cwLogs = new logs.LogGroup(this, 'Log', {
         logGroupName: `/aws/${this.commonName}-vpc/flowlogs`,
@@ -40,6 +66,7 @@ export class DataFabricSecurityStack extends NestedStack {
 
       this.subnets = this.vpc.privateSubnets;
     } else {
+      // Get the VPC and subnets if the IDs were provided.
       this.vpc = ec2.Vpc.fromLookup(this, this.coreId('import-vpc'), {
         vpcId: props.vpc.vpcId,
         isDefault: false,

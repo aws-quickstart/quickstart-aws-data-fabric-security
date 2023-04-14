@@ -17,21 +17,67 @@ import { LambdaDeployParameters, LambdaDestroyParameters } from "./core/interfac
 import { LambdaDeploymentPolicies } from "./core/utilities/lambda-deployment-policies";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
 
+/**
+ * Radiant Logic stack.
+ */
 export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploymentStack {
+  /**
+   * Stack identifier.
+   */
   private readonly radiantlogicId: any;
+
+  /**
+   * Lambda function install name.
+   */
   private readonly installName: string;
+
+  /**
+   * Lambda function uninstall name.
+   */
   private readonly uninstallName: string;
 
+  /**
+   * The VPC the Lambda functions will be deployed to.
+   */
   private readonly functionVpc: ec2.IVpc;
+
+  /**
+   * Security group used for the Lambda functions.
+   */
   private readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
+  /**
+   * Namespace of Radiant Logic deployment.
+   */
   private namespace = "radiantlogic";
+
+  /**
+   * Install string value.
+   */
   private installStr = "install";
+
+  /**
+   * Uninstall string value.
+   */
   private uninstallStr = "uninstall";
 
+  /**
+   * Kubectl layer for Lambda functions.
+   */
   private kubectlLayer = new KubectlLayer(this, 'KubectlLayer');
+
+  /**
+   * AWS CLI layer for Lambda functions.
+   */
   private awsCliLayer = new AwsCliLayer(this, 'AwsCliLayer');
   
+  /**
+   * Constructor of the Radiant Logic stack.
+   * 
+   * @param scope - Parent of this stack.
+   * @param id - Construct ID of this stack.
+   * @param props - Properties of this stack.
+   */
   constructor(scope: Construct, id: string, props: RadiantLogicStackProps) {
     super(scope, id, props);
 
@@ -53,6 +99,12 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     CdkNagSuppressions.createCommonCdkNagSuppressions(this, this.namespace);
   }
 
+  /**
+   * Creates the policy for the Lambda function to install Radiant Logic.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The policy document.
+   */
   createDeployPolicy(props: RadiantLogicStackProps): iam.PolicyDocument {
     let deployParameters: LambdaDeployParameters = {
       resourceName: this.radiantlogicId('deploy-policy'),
@@ -67,6 +119,12 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     return LambdaDeploymentPolicies.createDeployPolicy(deployParameters);
   }
 
+  /**
+   * Creates the policy for the Lambda function to uninstall Radiant Logic.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The policy document.
+   */
   createDestroyPolicy(props: RadiantLogicStackProps): iam.PolicyDocument {
     let destroyParameters: LambdaDestroyParameters = {
       resourceName: this.radiantlogicId('destroy-policy'),
@@ -84,6 +142,12 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     return policy;
   }
 
+  /**
+   * Creates the Lambda function to install Radiant Logic.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The Lambda function.
+   */
   createDeployFunction(props: RadiantLogicStackProps): lambda.Function {
     const radiantlogicDeployRole = new iam.Role(this, `${this.radiantlogicId}-deploy-role`, {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -120,6 +184,12 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     return radiantlogicDeployFunction;
   }
 
+  /**
+   * Creates the Lambda function to uninstall Radiant Logic.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The Lambda function.
+   */
   createDestroyFunction(props: RadiantLogicStackProps): lambda.Function {
     const radiantlogicDestroyRole = new iam.Role(this, `${this.radiantlogicId}-destroy-role`, {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -151,6 +221,12 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     return radiantlogicDestroyFunction;
   }
 
+  /**
+   * Creates the custom resource to respond to stack changes (create and delete events) by invoking Lambda functions.
+   * 
+   * @param deployFunction - Lambda function to install.
+   * @param destroyFunction - Lambda function to uninstall.
+   */
   createBootstrap(deployFunction: lambda.Function, destroyFunction: lambda.Function): void {
     let bootstrapRole = new iam.Role(this, this.radiantlogicId('bootstrap-role'), {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -174,7 +250,6 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
       resources: ["*"]
     }));
 
-    //Custom Resource to handle CloudFormation status change events
     new cr.AwsCustomResource(this, this.radiantlogicId('bootstrap'), {
       timeout: cdk.Duration.minutes(15),
       functionName: this.radiantlogicId('bootstrap'),

@@ -4,10 +4,16 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as eks from "aws-cdk-lib/aws-eks";
 import * as iam  from "aws-cdk-lib/aws-iam";
 
+/**
+ * Main stack properties.
+ */
 export interface MainStackProps extends StackProps {
   env: Environment,
 }
 
+/**
+ * Data Fabric Security stack properties.
+ */
 export interface DataFabricSecurityStackProps extends NestedStackProps {
   env: Environment,
   prefix: string,
@@ -19,6 +25,9 @@ export interface DataFabricSecurityStackProps extends NestedStackProps {
   domain: string
 }
 
+/**
+ * EKS Blueprints stack properties.
+ */
 export interface EksBlueprintsStackProps extends StackProps {
   env: Environment,
   prefix: string,
@@ -33,6 +42,9 @@ export interface EksBlueprintsStackProps extends StackProps {
   adminRoleArn: string
 }
 
+/**
+ * Immuta stack properties.
+ */
 export interface ImmutaStackProps extends NestedStackProps {
   env: Environment,
   prefix: string,
@@ -64,6 +76,9 @@ export interface ImmutaStackProps extends NestedStackProps {
   }
 }
 
+/**
+ * Radiant Logic stack properties.
+ */
 export interface RadiantLogicStackProps extends NestedStackProps {
   env: Environment,
   prefix: string,

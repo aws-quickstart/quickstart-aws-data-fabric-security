@@ -13,13 +13,31 @@ import { ImportHostedZoneProvider } from "@aws-quickstart/eks-blueprints";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
 import { EksBlueprintsStackProps } from "./props/stack-props";
 
+/**
+ * EKS Blueprints stack.
+ */
 export class EksBlueprintsStack {
+  /**
+   * Stack identifier.
+   */
   private readonly eksId: any;
+
+  /**
+   * The EKS Blueprint.
+   */
   private readonly eksBuildStack: blueprints.EksBlueprint;
 
+  /**
+   * Constructor of the EKS Blueprints stack.
+   * 
+   * @param scope - Parent of this stack.
+   * @param id - Construct ID of this stack.
+   * @param props - Properties of this stack.
+   */
   constructor(scope: Construct, id: string, props: EksBlueprintsStackProps) {  
     this.eksId = (id: string) => `${props.prefix}-${id}`;
     
+    // Set EKS endpoint access.
     const endpointAccess = props.endpointAccess;
     let access;
 
@@ -31,6 +49,7 @@ export class EksBlueprintsStack {
       access = eks.EndpointAccess.PUBLIC_AND_PRIVATE;
     }
 
+    // Create the EKS Blueprint builder.
     const eksBlueprintStackBuilder = blueprints.EksBlueprint.builder();
 
     const adminTeam = new blueprints.PlatformTeam({
@@ -38,6 +57,7 @@ export class EksBlueprintsStack {
       userRoleArn: props.adminRoleArn
     });
 
+    // Create EKS add-ons.
     const addOns: blueprints.ClusterAddOn[] = [
       new addons.VpcCniAddOn('v1.12.6-eksbuild.1'),
       new addons.CoreDnsAddOn('v1.9.3-eksbuild.2'),
@@ -58,6 +78,7 @@ export class EksBlueprintsStack {
       }),
     ];
 
+    // Create EKS cluster KMS key.
     const clusterKey = new kms.Key(scope, this.eksId('key'), {
       removalPolicy: RemovalPolicy.DESTROY,
       pendingWindow: Duration.days(7),
@@ -67,6 +88,7 @@ export class EksBlueprintsStack {
       enabled: true
     });
 
+    // Create the cluster provider.
     const genericClusterProvider = new blueprints.GenericClusterProvider({
       clusterName: props.clusterName,
       version: eks.KubernetesVersion.of('1.25'),
@@ -92,6 +114,7 @@ export class EksBlueprintsStack {
       ]
     });
 
+    // Build the EKS Blueprint stack.
     this.eksBuildStack = eksBlueprintStackBuilder
       .clusterProvider(genericClusterProvider)
       .addOns(...addOns)
@@ -111,14 +134,23 @@ export class EksBlueprintsStack {
       });
 
     this.generateOutputs(this.eksBuildStack.getClusterInfo().cluster);
-
     this.createCdkNagSuppressions();
   }
 
-  public getStack() {
+  /**
+   * Get the EKS Blueprint.
+   * 
+   * @returns The EKS Blueprint.
+   */
+  public getStack(): blueprints.EksBlueprint {
     return this.eksBuildStack;
   }
 
+  /**
+   * Generate cluster attributes as outputs.
+   * 
+   * @param cluster - The EKS Cluster.
+   */
   private generateOutputs(cluster : eks.Cluster): void {
     new CfnOutput(this.eksBuildStack, "EKSAdminRole", {
       value: cluster.adminRole.roleArn,
@@ -133,6 +165,9 @@ export class EksBlueprintsStack {
     });
   }
 
+  /**
+   * Create cdk-nag suppressions for EKS-related with ServiceRole, DefaultPolicy, or NodeGroupRole. 
+   */
   private createEksCdkNagSuppressions() {
     for (const child of this.eksBuildStack.node.findAll()) {
 
@@ -150,6 +185,9 @@ export class EksBlueprintsStack {
     }
   }
 
+  /**
+   * Create cdk-nag suppressions for other resources deployed by this stack.
+   */
   private createCdkNagSuppressions() {
     this.createEksCdkNagSuppressions();
 

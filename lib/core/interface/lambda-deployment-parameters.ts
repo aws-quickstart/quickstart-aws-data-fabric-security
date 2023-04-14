@@ -1,3 +1,6 @@
+/**
+ * Interface for the Lambda function install policy parameters.
+ */
 export interface LambdaDeployParameters {
   resourceName: string;
   clusterResources: string[];
@@ -5,6 +8,9 @@ export interface LambdaDeployParameters {
   logResources: string[];
 }
 
+/**
+ * Interface for the Lambda function uninstall policy parameters.
+ */
 export interface LambdaDestroyParameters {
   resourceName: string;
   clusterResources: string[];

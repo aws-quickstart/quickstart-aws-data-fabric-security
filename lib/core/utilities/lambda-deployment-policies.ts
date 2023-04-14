@@ -1,8 +1,17 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { LambdaDeployParameters, LambdaDestroyParameters } from '../interface/lambda-deployment-parameters';
 
+/**
+ * The Lambda deployment policies.
+ */
 export class LambdaDeploymentPolicies {
-  static createDeployPolicy(parameters: LambdaDeployParameters) {
+  /**
+   * Create the Lambda function install policy.
+   * 
+   * @param parameters - The Lambda policy parameters.
+   * @returns The policy document.
+   */
+  static createDeployPolicy(parameters: LambdaDeployParameters): iam.PolicyDocument {
     const deployPolicy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
@@ -29,7 +38,13 @@ export class LambdaDeploymentPolicies {
     return deployPolicy;
   }
 
-  static createDestroyPolicy(parameters: LambdaDestroyParameters) {
+  /**
+   * Create the Lambda function uninstall policy.
+   * 
+   * @param parameters - The Lambda policy parameters.
+   * @returns The policy document.
+   */
+  static createDestroyPolicy(parameters: LambdaDestroyParameters): iam.PolicyDocument {
     const destroyPolicy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
