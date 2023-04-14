@@ -2,13 +2,13 @@ import { Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { DataFabricSecurityStack } from "./data-fabric-security-stack";
+import { EksBlueprintsStack } from "./eks-blueprints-stack";
 import { ImmutaStack } from "./immuta-stack";
 import { RadiantLogicStack } from "./radiant-logic-stack";
 
 import { MainStackProps } from "./props/stack-props";
 import { Config } from "./core/config";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
-import { EksBlueprintsStack } from "./eks-blueprints-stack";
 
 export class MainStack extends Stack {
 
