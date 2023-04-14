@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as cr from "aws-cdk-lib/custom-resources";
 
 import { KubectlLayer } from "aws-cdk-lib/lambda-layer-kubectl";
@@ -20,6 +21,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
   private readonly immutaId: any;
   private readonly installName: string;
   private readonly uninstallName: string;
+  private readonly functionVpc: ec2.IVpc;
+  private readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   private namespace = "immuta";
   private installStr = "install";
@@ -34,6 +37,9 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     this.immutaId = (id: string) => `${props.prefix}-${this.namespace}-${id}`;
     this.installName = this.immutaId(this.installStr);
     this.uninstallName = this.immutaId(this.uninstallStr);
+
+    this.functionVpc = props.cluster.vpc;
+    this.clusterSecurityGroup = props.cluster.clusterSecurityGroup;
 
     const immutaDeploy = this.createDeployFunction(props);
     props.cluster.adminRole.grantAssumeRole(immutaDeploy.role!);
@@ -50,6 +56,7 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     let deployParameters: LambdaDeployParameters = {
       resourceName: this.immutaId('deploy-policy'),
       clusterResources: [props.cluster.clusterArn],
+      vpcResources: [this.functionVpc.vpcArn],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
@@ -63,6 +70,7 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     let destroyParameters: LambdaDestroyParameters = {
       resourceName: this.immutaId('destroy-policy'),
       clusterResources: [props.cluster.clusterArn],
+      vpcResources: [this.functionVpc.vpcArn],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
@@ -92,6 +100,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
       timeout: cdk.Duration.minutes(15),
+      vpc: this.functionVpc,
+      securityGroups: [this.clusterSecurityGroup],
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.installStr}.zip`)),
       environment: {
         'NAMESPACE': this.namespace,
@@ -135,6 +145,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
       timeout: cdk.Duration.minutes(15),
+      vpc: this.functionVpc,
+      securityGroups: [this.clusterSecurityGroup],
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.uninstallStr}.zip`)),
       environment: {
         'NAMESPACE': this.namespace,
@@ -160,10 +172,23 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       resources: [deployFunction.functionArn, destroyFunction.functionArn]
     }));
 
+    bootstrapRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ],
+      resources: ["*"]
+    }));
+
     //Custom Resource to handle CloudFormation status change events
     new cr.AwsCustomResource(this, this.immutaId('bootstrap'), {
       timeout: cdk.Duration.minutes(15),
       functionName: this.immutaId('bootstrap'),
+      vpc: this.functionVpc,
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),

@@ -10,6 +10,16 @@ export class LambdaDeploymentPolicies {
           resources: parameters.clusterResources,
         }),
         new iam.PolicyStatement({
+          actions: [
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:CreateNetworkInterface",
+            "ec2:DeleteNetworkInterface",
+            "ec2:DescribeInstances",
+            "ec2:AttachNetworkInterface"
+          ],
+          resources: ["*"],
+        }),       
+        new iam.PolicyStatement({
           actions: ["logs:*"],
           resources: parameters.logResources,
         }),
@@ -26,6 +36,16 @@ export class LambdaDeploymentPolicies {
           actions: ["eks:*"],
           resources: parameters.clusterResources,
         }),
+        new iam.PolicyStatement({
+          actions: [
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:CreateNetworkInterface",
+            "ec2:DeleteNetworkInterface",
+            "ec2:DescribeInstances",
+            "ec2:AttachNetworkInterface"
+          ],
+          resources: ["*"],
+        }),   
         new iam.PolicyStatement({
           actions: ["logs:*"],
           resources: parameters.logResources,

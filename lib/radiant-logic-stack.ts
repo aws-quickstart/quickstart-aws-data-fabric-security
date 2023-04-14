@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as cr from "aws-cdk-lib/custom-resources";
 
 import { KubectlLayer } from "aws-cdk-lib/lambda-layer-kubectl";
@@ -21,6 +22,9 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
   private readonly installName: string;
   private readonly uninstallName: string;
 
+  private readonly functionVpc: ec2.IVpc;
+  private readonly clusterSecurityGroup: ec2.ISecurityGroup;
+
   private namespace = "radiantlogic";
   private installStr = "install";
   private uninstallStr = "uninstall";
@@ -34,6 +38,9 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     this.radiantlogicId = (id: string) => `${props.prefix}-${this.namespace}-${id}`;
     this.installName = this.radiantlogicId(this.installStr);
     this.uninstallName = this.radiantlogicId(this.uninstallStr);
+
+    this.functionVpc = props.cluster.vpc;
+    this.clusterSecurityGroup = props.cluster.clusterSecurityGroup;
 
     const radiantlogicDeploy = this.createDeployFunction(props);
     props.cluster.adminRole.grantAssumeRole(radiantlogicDeploy.role!);
@@ -50,6 +57,7 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     let deployParameters: LambdaDeployParameters = {
       resourceName: this.radiantlogicId('deploy-policy'),
       clusterResources: [props.cluster.clusterArn],
+      vpcResources: [props.cluster.vpc.vpcArn],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
@@ -63,6 +71,7 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     let destroyParameters: LambdaDestroyParameters = {
       resourceName: this.radiantlogicId('destroy-policy'),
       clusterResources: [props.cluster.clusterArn],
+      vpcResources: [props.cluster.vpc.vpcArn],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
@@ -92,6 +101,8 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
       timeout: cdk.Duration.minutes(15),
+      vpc: this.functionVpc,
+      securityGroups: [this.clusterSecurityGroup],
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.installStr}.zip`)),
       environment: {
         'NAMESPACE': this.namespace,
@@ -126,6 +137,8 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
       timeout: cdk.Duration.minutes(15),
+      vpc: this.functionVpc,
+      securityGroups: [this.clusterSecurityGroup],
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.uninstallStr}.zip`)),
       environment: {
         'NAMESPACE': this.namespace,
@@ -149,10 +162,23 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
       resources: [deployFunction.functionArn, destroyFunction.functionArn]
     }));
 
+    bootstrapRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ],
+      resources: ["*"]
+    }));
+
     //Custom Resource to handle CloudFormation status change events
     new cr.AwsCustomResource(this, this.radiantlogicId('bootstrap'), {
       timeout: cdk.Duration.minutes(15),
       functionName: this.radiantlogicId('bootstrap'),
+      vpc: this.functionVpc,
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
