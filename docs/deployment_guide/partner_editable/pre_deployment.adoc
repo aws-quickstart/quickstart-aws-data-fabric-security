@@ -118,7 +118,7 @@ The following tables represent the parameters that are set in the config/dev.yam
 | Default    
 
 | Clustername | Custom name for the EKS cluister | "data-fabric-security-eks-cluster"   
-| EKSAdminRole | Admin role ARN for EKS (This ARN must be an existing role in the account with AdminAccess permission) | ""         
+| EKSAdminRole | The IAM principle that creates the cluster and is automatically granted `system:masters` permissions in the cluster's RBAC configuration in the Amazon EKS control plane (This ARN must be an existing role in the account with the AmazonEKSClusterPolicy attached) | ""         
 | EKSEndpointAccess | EKS endpoint access type (Valid inputs are "PUBLIC", "PRIVATE", or "" for both) | ""         
 | InstanceType      | Instance type for the EKS cluster                                               | "m5.large" 
 | ClusterSize       | Size of the EKS cluster                                                         | 3          
