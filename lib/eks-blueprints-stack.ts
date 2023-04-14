@@ -5,7 +5,7 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as blueprints from '@aws-quickstart/eks-blueprints';
-import * as addons from '@aws-quickstart/eks-blueprints/dist/addons';
+import { addons } from "@aws-quickstart/eks-blueprints";
 
 import { KubectlV24Layer } from '@aws-cdk/lambda-layer-kubectl-v24';
 import { ImportHostedZoneProvider } from "@aws-quickstart/eks-blueprints";
@@ -39,11 +39,11 @@ export class EksBlueprintsStack {
     });
 
     const addOns: blueprints.ClusterAddOn[] = [
-      new addons.VpcCniAddOn('v1.11.4-eksbuild.1'),
-      new addons.CoreDnsAddOn('v1.8.7-eksbuild.3'),
-      new addons.KubeProxyAddOn('v1.24.7-eksbuild.2'),
-      new addons.EbsCsiDriverAddOn('v1.13.0-eksbuild.3'),
-      new addons.ExternalDnsAddOn({ 
+      new addons.VpcCniAddOn('v1.12.6-eksbuild.1'),
+      new addons.CoreDnsAddOn('v1.9.3-eksbuild.2'),
+      new addons.KubeProxyAddOn('v1.25.6-eksbuild.2'),
+      new addons.EbsCsiDriverAddOn('v1.17.0-eksbuild.1'),
+      new addons.ExternalDnsAddOn({
         hostedZoneResources: [props.domain],
         values: {
           aws: {
@@ -69,7 +69,7 @@ export class EksBlueprintsStack {
 
     const genericClusterProvider = new blueprints.GenericClusterProvider({
       clusterName: props.clusterName,
-      version: eks.KubernetesVersion.of('1.24'),
+      version: eks.KubernetesVersion.of('1.25'),
       endpointAccess: access,
       clusterLogging: [
         eks.ClusterLoggingTypes.API,
