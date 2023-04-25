@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as cr from "aws-cdk-lib/custom-resources";
 
 import { KubectlLayer } from "aws-cdk-lib/lambda-layer-kubectl";
@@ -16,24 +17,76 @@ import { LambdaDeployParameters, LambdaDestroyParameters } from "./core/interfac
 import { LambdaDeploymentPolicies } from "./core/utilities/lambda-deployment-policies";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
 
+/**
+ * Immuta stack.
+ */
 export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentStack {
+  /**
+   * Stack identifier.
+   */
   private readonly immutaId: any;
+  
+  /**
+   * Lambda function install name.
+   */
   private readonly installName: string;
+
+  /**
+   * Lambd function uninstall name.
+   */
   private readonly uninstallName: string;
 
+  /**
+   * The VPC the Lambda functions will be deployed to.
+   */
+  private readonly functionVpc: ec2.IVpc;
+
+  /**
+   * Security group used for the Lambda functions.
+   */
+  private readonly clusterSecurityGroup: ec2.ISecurityGroup;
+
+  /**
+   * Namespace of Radiant Logic deployment.
+   */
   private namespace = "immuta";
+
+  /**
+   * Install string value.
+   */
   private installStr = "install";
+
+  /**
+   * Uninstall string value.
+   */
   private uninstallStr = "uninstall";
 
+  /**
+   * Kubectl layer for Lambda functions.
+   */
   private kubectlLayer = new KubectlLayer(this, 'KubectlLayer');
+
+  /**
+   * AWS CLI layer for Lambda functions.
+   */
   private awsCliLayer = new AwsCliLayer(this, 'AwsCliLayer');
 
+  /**
+  * Constructor of the Immuta stack.
+   * 
+   * @param scope - Parent of this stack.
+   * @param id - Construct ID of this stack.
+   * @param props - Properties of this stack.
+   */
   constructor(scope: Construct, id: string, props: ImmutaStackProps) {
     super(scope, id, props);
 
     this.immutaId = (id: string) => `${props.prefix}-${this.namespace}-${id}`;
     this.installName = this.immutaId(this.installStr);
     this.uninstallName = this.immutaId(this.uninstallStr);
+
+    this.functionVpc = props.cluster.vpc;
+    this.clusterSecurityGroup = props.cluster.clusterSecurityGroup;
 
     const immutaDeploy = this.createDeployFunction(props);
     props.cluster.adminRole.grantAssumeRole(immutaDeploy.role!);
@@ -46,10 +99,17 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     CdkNagSuppressions.createCommonCdkNagSuppressions(this, this.namespace);
   }
 
+  /**
+   * Creates the policy for the Lambda function to install Immuta.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The policy document.
+   */
   createDeployPolicy(props: ImmutaStackProps): iam.PolicyDocument {
     let deployParameters: LambdaDeployParameters = {
       resourceName: this.immutaId('deploy-policy'),
       clusterResources: [props.cluster.clusterArn],
+      vpcResources: [this.functionVpc.vpcArn],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
@@ -59,10 +119,17 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     return LambdaDeploymentPolicies.createDeployPolicy(deployParameters);
   }
 
+   /**
+   * Creates the policy for the Lambda function to uninstall Immuta.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The policy document.
+   */
   createDestroyPolicy(props: ImmutaStackProps): iam.PolicyDocument {
     let destroyParameters: LambdaDestroyParameters = {
       resourceName: this.immutaId('destroy-policy'),
       clusterResources: [props.cluster.clusterArn],
+      vpcResources: [this.functionVpc.vpcArn],
       logResources: [
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*`,
         `arn:${props.partition}:logs:${props.env.region}:${props.env.account}:log-group:*:log-stream:*`
@@ -75,6 +142,12 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     return policy;
   }
 
+  /**
+   * Creates the Lambda function to install Immuta.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The Lambda function.
+   */
   createDeployFunction(props: ImmutaStackProps): lambda.Function {
     const immutaDeployRole = new iam.Role(this, `${this.immutaId}-deploy-role`, {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -92,6 +165,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
       timeout: cdk.Duration.minutes(15),
+      vpc: this.functionVpc,
+      securityGroups: [this.clusterSecurityGroup],
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.installStr}.zip`)),
       environment: {
         'NAMESPACE': this.namespace,
@@ -118,6 +193,12 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     return immutaDeployFunction;
   }
 
+  /**
+   * Creates the Lambda function to uninstall Immuta.
+   * 
+   * @param props - Properties of the stack.
+   * @returns The Lambda function.
+   */
   createDestroyFunction(props: ImmutaStackProps): lambda.Function {
     const immutaDestroyRole = new iam.Role(this, `${this.immutaId}-destroy-role`, {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -135,6 +216,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       handler: 'main.lambda_handler',
       layers: [this.kubectlLayer, this.awsCliLayer],
       timeout: cdk.Duration.minutes(15),
+      vpc: this.functionVpc,
+      securityGroups: [this.clusterSecurityGroup],
       code: lambda.Code.fromAsset(path.join(__dirname, `../resources/${this.namespace}/${this.uninstallStr}.zip`)),
       environment: {
         'NAMESPACE': this.namespace,
@@ -149,6 +232,12 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     return immutaDestroyFunction;
   }
 
+  /**
+   * Creates the custom resource to respond to stack changes (create and delete events) by invoking Lambda functions.
+   * 
+   * @param deployFunction - Lambda function to install.
+   * @param destroyFunction - Lambda function to uninstall.
+   */
   createBootstrap(deployFunction: lambda.Function, destroyFunction: lambda.Function): void {
     let bootstrapRole = new iam.Role(this, this.immutaId('bootstrap-role'), {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -160,10 +249,22 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       resources: [deployFunction.functionArn, destroyFunction.functionArn]
     }));
 
-    //Custom Resource to handle CloudFormation status change events
+    bootstrapRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ],
+      resources: ["*"]
+    }));
+
     new cr.AwsCustomResource(this, this.immutaId('bootstrap'), {
       timeout: cdk.Duration.minutes(15),
       functionName: this.immutaId('bootstrap'),
+      vpc: this.functionVpc,
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),

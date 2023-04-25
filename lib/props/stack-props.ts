@@ -1,12 +1,19 @@
 import { Environment, NestedStackProps, StackProps } from "aws-cdk-lib";
-import { ISecurityGroup, IVpc } from "aws-cdk-lib/aws-ec2";
-import { Cluster } from "aws-cdk-lib/aws-eks";
-import { IRole } from "aws-cdk-lib/aws-iam";
 
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import * as eks from "aws-cdk-lib/aws-eks";
+import * as iam  from "aws-cdk-lib/aws-iam";
+
+/**
+ * Main stack properties.
+ */
 export interface MainStackProps extends StackProps {
   env: Environment,
 }
 
+/**
+ * Data Fabric Security stack properties.
+ */
 export interface DataFabricSecurityStackProps extends NestedStackProps {
   env: Environment,
   prefix: string,
@@ -18,26 +25,34 @@ export interface DataFabricSecurityStackProps extends NestedStackProps {
   domain: string
 }
 
+/**
+ * EKS Blueprints stack properties.
+ */
 export interface EksBlueprintsStackProps extends StackProps {
   env: Environment,
   prefix: string,
-  vpc: IVpc,
+  vpc: ec2.IVpc,
+  subnets: ec2.ISubnet[],
   domain: string,
   hostedZoneId: string,
+  clusterName: string,
   endpointAccess: string,
   instanceType: string,
   numInstances: number,
   adminRoleArn: string
 }
 
+/**
+ * Immuta stack properties.
+ */
 export interface ImmutaStackProps extends NestedStackProps {
   env: Environment,
   prefix: string,
-  vpc: IVpc,
-  securityGroups: [ISecurityGroup],
+  vpc: ec2.IVpc,
+  securityGroups: [ec2.ISecurityGroup],
   partition: string,
-  cluster: Cluster,
-  clusterRole: IRole,
+  cluster: eks.Cluster,
+  clusterRole: iam.IRole,
   hostedZoneId: string,
   immuta: {
     chartVersion: string,
@@ -61,14 +76,17 @@ export interface ImmutaStackProps extends NestedStackProps {
   }
 }
 
+/**
+ * Radiant Logic stack properties.
+ */
 export interface RadiantLogicStackProps extends NestedStackProps {
   env: Environment,
   prefix: string,
-  vpc: IVpc,
-  securityGroups: [ISecurityGroup],
+  vpc: ec2.IVpc,
+  securityGroups: [ec2.ISecurityGroup],
   partition: string,
-  cluster: Cluster,
-  clusterRole: IRole,
+  cluster: eks.Cluster,
+  clusterRole: iam.IRole,
   hostedZoneId: string,
   domain: string,
   radiantlogic: {

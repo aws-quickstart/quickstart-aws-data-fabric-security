@@ -2,16 +2,26 @@ import { Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { DataFabricSecurityStack } from "./data-fabric-security-stack";
+import { EksBlueprintsStack } from "./eks-blueprints-stack";
 import { ImmutaStack } from "./immuta-stack";
 import { RadiantLogicStack } from "./radiant-logic-stack";
 
 import { MainStackProps } from "./props/stack-props";
 import { Config } from "./core/config";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
-import { EksBlueprintsStack } from "./eks-blueprints-stack";
 
+/**
+ * Main stack to deploy the solution.
+ */
 export class MainStack extends Stack {
 
+  /**
+   * Constructor of the main solution stack.
+   * 
+   * @param scope - Parent of this stack.
+   * @param id - Construct ID of this stack.
+   * @param props - Properties of this stack.
+   */
   constructor(scope: Construct, id: string, props: MainStackProps) {
     super(scope, id, props);
 
@@ -37,8 +47,10 @@ export class MainStack extends Stack {
       env: props.env,
       prefix: commonName,
       vpc: dataFabricCoreStack.vpc,
+      subnets: dataFabricCoreStack.subnets,
       domain: Config.Current.Domain,
       hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
+      clusterName: Config.Current.EKS.ClusterName,
       endpointAccess: Config.Current.EKS.EKSEndpointAccess,
       instanceType: Config.Current.EKS.InstanceType,
       numInstances: Config.Current.EKS.ClusterSize,
@@ -79,7 +91,6 @@ export class MainStack extends Stack {
         }
       });
 
-      // Add dependency
       eksClusterStack.addDependency(immutaStack)
     }
     
@@ -102,14 +113,15 @@ export class MainStack extends Stack {
         }
       });
 
-      // Add dependency
       eksClusterStack.addDependency(radiantlogicStack)
     }
 
-    // Supress cdk-nag findings
     this.createCdkSuppressions();
   }
 
+  /**
+   * Suppress service role findings.
+   */
   private serviceRoleCdkNagSuppression() {
     for (const child of this.node.findAll()) {
 
@@ -126,6 +138,9 @@ export class MainStack extends Stack {
     }
   }
 
+  /**
+   * Create cdk-nag suppressions.
+   */
   private createCdkSuppressions() {
     CdkNagSuppressions.createStackCdkNagSuppressions(
       this, 
