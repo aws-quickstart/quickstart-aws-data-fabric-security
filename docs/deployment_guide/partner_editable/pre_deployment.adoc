@@ -3,53 +3,51 @@
 == Predeployment steps
 
 [%hardbreaks]
-. Install Nodejs 18.0.0 or later 
-.. example: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Install Nodejs on an EC2 instance]
-. Install AWS CDK CLI using Node Package Manager(npm)
+. Install Nodejs 18.0.0 or later. For more information, refer to https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Tutorial: Setting Up Node.js on an Amazon EC2 Instance].
+. Install AWS Cloud Development Kit (AWS CDK) using Node Package Manager (npm).
 +
 [,bash]
 ----
 npm install -g aws-cdk
 ----
-+ 
-For additional info see the https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html[AWS Cloud Development Kit Developer guide]
-
-. Load your AWS credentials into your dev environment (may be done via AWSCLI)
-. Obtain your Radiant Logic License
-. Obtain you Immuta license 
 +
-NOTE: The Immuta passwords required in step 3 of the install instructions will be provided by Immuta once a license is purchased.
+For more information, refer to https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html[Getting started with the AWS CDK].
+
+. Load your AWS credentials into your development environment. You can do this with the AWS Command Line Interface (AWS CLI).
+. Obtain licenses for Immuta and Radiant Logic.
++
+NOTE: After purchasing an Immuta license, you will receive a password from Immuta. Enter the Immuta password for the `Instance.Password` parameter in `dev.yaml` during deployment.
 
 == Deployment steps
 [%hardbreaks]
-. Navigate to the Data Fabric Security root folder. 
+. Navigate to the Data Fabric Security root folder.
 +
 [,bash]
 ----
    cd <path>/quickstart-aws-data-fabric-security
 ----
-. Install all packages. 
+. Install all packages.
 +
 [,bash]
 ----
    npm ci
 ----
 . Open the file <path>/quickstart-aws-data-fabric-security/config/dev.yaml for editing and set the variables for your environment.
-+ 
++
 See [Deployment Configuration](#deployment-configuration) section for additional details.
-. Bootstrap CDK. 
+. Bootstrap CDK.
 +
 [,bash]
 ----
 cdk bootstrap aws://<ACCOUNT_ID>/<REGION>
 ----
-. Deploy the solution 
+. Deploy the solution
 +
 [,bash]
 ----
-   bash dfs-solution-install.sh 
+   bash dfs-solution-install.sh
 ----
-+ 
++
 NOTE: It takes about 20 minutes to deploy the solution.
 . Once deployment is complete, Copy the output from the deployment and save it for later use. An example of the output:
 +
@@ -79,7 +77,7 @@ DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityekscluster
 DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityeksclusterGetTokenCommand1D6ABA05 = aws eks get-token --cluster-name data-fabric-security-eks-cluster --region us-gov-west-1 --role-arn arn:aws-us-gov:iam::123456789012:role/DataFabricStackdatafabric-datafabricsecurityeksclu-14T5IMKRMS7JT
 ----
 
-. See the Operational Guide for additional configuration of Radiant Logic and 
+. See the Operational Guide for additional configuration of Radiant Logic and
 
 === Deployment Configuration
 
@@ -89,40 +87,40 @@ The following tables represent the parameters that are set in the config/dev.yam
 
 [%header,cols="2,6,1"]
 |===
-|Parameter |Description |Default 
-|AWSAccountID |ID of the AWS Account to deploy solution |"" 
+|Parameter |Description |Default
+|AWSAccountID |ID of the AWS Account to deploy solution |""
 |AWSRegion |AWS region to deploy solution |""
-|Domain |Domain name that will be used for the solution |"" 
+|Domain |Domain name that will be used for the solution |""
 |===
 
 ==== Networking
 
 [%header,cols="2,6,1"]
 |===
-| Parameter 
+| Parameter
 | Description
-| Default 
+| Default
 
-| VpcId     | ID of the VPC to use for the deployment (leave as empty string if you want to create a new VPC) | ""      
-| SubnetA   | Private subnet in AZ1 (leave as empty string if you want to create a new subnet)                | ""      
-| SubnetB   | Private subnet in AZ2 (leave as empty string if you want to create a new subnet)                | ""      
-| MaxAZs    | Maximum availability zones                                                            | 2       
+| VpcId     | ID of the VPC to use for the deployment (leave as empty string if you want to create a new VPC) | ""
+| SubnetA   | Private subnet in AZ1 (leave as empty string if you want to create a new subnet)                | ""
+| SubnetB   | Private subnet in AZ2 (leave as empty string if you want to create a new subnet)                | ""
+| MaxAZs    | Maximum availability zones                                                            | 2
 |===
 
 ==== EKS
 
 [%header,cols="2,6,1"]
 |===
-| Parameter         
+| Parameter
 | Description
-| Default    
+| Default
 
-| Clustername | Custom name for the EKS cluister | "data-fabric-security-eks-cluster"   
-| EKSAdminRole | The IAM principle that creates the cluster and is automatically granted `system:masters` permissions in the cluster's RBAC configuration in the Amazon EKS control plane (This ARN must be an existing role in the account with the AmazonEKSClusterPolicy attached) | ""         
-| EKSEndpointAccess | EKS endpoint access type (Valid inputs are "PUBLIC", "PRIVATE", or "" for both) | ""         
-| InstanceType      | Instance type for the EKS cluster                                               | "m5.large" 
-| ClusterSize       | Size of the EKS cluster                                                         | 3          
-|=== 
+| Clustername | Custom name for the EKS cluister | "data-fabric-security-eks-cluster"
+| EKSAdminRole | The IAM principle that creates the cluster and is automatically granted `system:masters` permissions in the cluster's RBAC configuration in the Amazon EKS control plane (This ARN must be an existing role in the account with the AmazonEKSClusterPolicy attached) | ""
+| EKSEndpointAccess | EKS endpoint access type (Valid inputs are "PUBLIC", "PRIVATE", or "" for both) | ""
+| InstanceType      | Instance type for the EKS cluster                                               | "m5.large"
+| ClusterSize       | Size of the EKS cluster                                                         | 3
+|===
 
 ==== Immuta
 
@@ -130,32 +128,32 @@ The following tables represent the parameters that are set in the config/dev.yam
 |===
 | Parameter
 | Description
-| Default 
+| Default
 
-| Deploy                               | Boolean to deploy the component   | true    
+| Deploy                               | Boolean to deploy the component   | true
 | ChartVersion                         | Immuta Helm Chart version         | ""
 | ImmutaVersion                        | Version of Immuta to Install      | ""
 | ImageTag                             | Docker image tag                  | ""
-| Instance.Username                    | Immuta instance username          | ""      
-| Instance.Password                    | Immuta instance password          | ""      
-| Database.ImmutaDBPassword            | Database password                 | ""      
-| Database.ImmutaDBSuperUserPassword   | Database superuser password       | ""      
-| Database.ImmutaDBReplicationPassword | Database replication password     | ""      
-| Database.ImmutaDBPatroniApiPassword  | Database Patroni API password     | ""      
-| Query.ImmutaQEPassword               | Query engine password             | ""      
-| Query.ImmutaQESuperUserPassword      | Query engine superuser password   | ""      
-| Query.ImmutaQEReplicationPassword    | Query engine replication password | ""      
-| Query.ImmutaQEPatroniApiPassword     | Query engine Patroni API password | ""      
+| Instance.Username                    | Immuta instance username          | ""
+| Instance.Password                    | Immuta instance password          | ""
+| Database.ImmutaDBPassword            | Database password                 | ""
+| Database.ImmutaDBSuperUserPassword   | Database superuser password       | ""
+| Database.ImmutaDBReplicationPassword | Database replication password     | ""
+| Database.ImmutaDBPatroniApiPassword  | Database Patroni API password     | ""
+| Query.ImmutaQEPassword               | Query engine password             | ""
+| Query.ImmutaQESuperUserPassword      | Query engine superuser password   | ""
+| Query.ImmutaQEReplicationPassword    | Query engine replication password | ""
+| Query.ImmutaQEPatroniApiPassword     | Query engine Patroni API password | ""
 |===
 
 ==== Radiant Logic
 
 [%header,cols="2,6,1"]
 |===
-| Parameter    | Description                                 | Default 
-| Deploy       | Boolean to deploy the component             | true    
+| Parameter    | Description                                 | Default
+| Deploy       | Boolean to deploy the component             | true
 | ZkImageTag | Zookeeper Image Tag                   | ""
 | FidImageTag | FID Image Tag                        | ""
-| License      | License for Radiant Logic                   | ""      
-| RootPassword | Password to be used for the root admin user | ""      
+| License      | License for Radiant Logic                   | ""
+| RootPassword | Password to be used for the root admin user | ""
 |===
