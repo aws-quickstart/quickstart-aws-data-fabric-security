@@ -3,7 +3,7 @@
 == Predeployment steps
 
 [%hardbreaks]
-. Install Nodejs 18.0.0 or later. For more information, refer to https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Tutorial: Setting Up Node.js on an Amazon EC2 Instance].
+. Install Node.js 18.0.0 or later. For more information, refer to https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Tutorial: Setting Up Node.js on an Amazon EC2 Instance].
 . Install AWS Cloud Development Kit (AWS CDK) using Node Package Manager (npm).
 +
 [,bash]
@@ -13,7 +13,7 @@ npm install -g aws-cdk
 +
 For more information, refer to https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html[Getting started with the AWS CDK].
 
-. Load your AWS credentials into your development environment. You can do this with the AWS Command Line Interface (AWS CLI).
+. Load your AWS credentials into your development environment. You can do this with the AWS Command Line Interface (AWS CLI). For more information, refer to https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth[Authentication with AWS].
 . Obtain licenses for Immuta and Radiant Logic.
 +
 NOTE: After purchasing an Immuta license, you will receive a password from Immuta. Enter the Immuta password for the `Instance.Password` parameter in `dev.yaml` during deployment.
@@ -32,7 +32,7 @@ NOTE: After purchasing an Immuta license, you will receive a password from Immut
 ----
    npm ci
 ----
-. Open the file <path>/quickstart-aws-data-fabric-security/config/dev.yaml for editing and set the variables for your environment.
+. Open the file `<path>/quickstart-aws-data-fabric-security/config/dev.yaml` for editing and set the variables for your environment.
 +
 See [Deployment Configuration](#deployment-configuration) section for additional details.
 . Bootstrap CDK.
