@@ -2,8 +2,15 @@
 
 == Postdeployment steps
 
+=== Immuta and Radiant Logic configuration
+
+After deployment, refer to the following documentation to get started with Immuta and Radiant Logic.
+
+//TODO: add links to subjects covered in proposed Operational Guide
+
+
 === Uninstall the Partner Solution
-Complete the following steps to uninstall the Partner Solution.
+To uninstall the Partner Solution, complete the following steps.
 
 ==== Step 1: Run the Lambda *uninstall* functions for Immuta and Radiant Logic
 

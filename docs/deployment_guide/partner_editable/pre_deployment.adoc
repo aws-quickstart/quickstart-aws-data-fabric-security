@@ -20,7 +20,7 @@ NOTE: After purchasing an Immuta license, you will receive a password from Immut
 
 == Deployment steps
 [%hardbreaks]
-. Navigate to the Data Fabric Security root folder.
+. Navigate to the AWS Data Fabric Security root folder.
 +
 [,bash]
 ----
@@ -32,26 +32,24 @@ NOTE: After purchasing an Immuta license, you will receive a password from Immut
 ----
    npm ci
 ----
-. Open the file `<path>/quickstart-aws-data-fabric-security/config/dev.yaml` for editing and set the variables for your environment.
-+
-See [Deployment Configuration](#deployment-configuration) section for additional details.
-. Bootstrap CDK.
+. Open the file `<path>/quickstart-aws-data-fabric-security/config/dev.yaml`.
+. Edit the variables to customize the deployment for your environment. For variable details, refer to <<Deployment configuration>>, later in this guide.
+. Run the following command to bootstrap your AWS environment.
 +
 [,bash]
 ----
 cdk bootstrap aws://<ACCOUNT_ID>/<REGION>
 ----
-. Deploy the solution
+. Deploy the solution.
 +
 [,bash]
 ----
    bash dfs-solution-install.sh
 ----
 +
-NOTE: It takes about 20 minutes to deploy the solution.
-. Once deployment is complete, Copy the output from the deployment and save it for later use. An example of the output:
-+
-Example output for DataFabricStack
+NOTE: The solution takes about 20 minutes to deploy.
+
+. Once deployment is complete, Copy the output from the deployment and save it for later use. The following is an example of output for `DataFabricStack`.
 +
 [,bash]
 ----
@@ -65,7 +63,7 @@ DataFabricStack.ExportsOutputFnGetAttdatafabricsecuritykeyEF30DCE5Arn6660AD21 = 
 DataFabricStack.ExportsOutputRefdatafabricsecuritykubectl66B18AE6595A4A51 = arn:aws-us-gov:lambda:us-gov-west-1:123456789012:layer:datafabricsecuritykubectl44B16AB6:5
 ----
 +
-Example output for DataFabricStack/data-fabric-security-eks-cluster
+The following is an example of output for `DataFabricStack/data-fabric-security-eks-cluster`.
 +
 [,bash]
 ----
@@ -79,9 +77,9 @@ DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityekscluster
 
 . See the Operational Guide for additional configuration of Radiant Logic and
 
-=== Deployment Configuration
+=== Deployment configuration
 
-The following tables represent the parameters that are set in the config/dev.yaml file
+Edit the variables in `config/dev.yaml` to customize the deployment for your environment.
 
 ==== Global
 
