@@ -2,22 +2,24 @@
 
 == Postdeployment steps
 
-=== Uninstall Solution
-To remove the solution, you will need to run the Lambda functions to uninstall Immuta and Radiant Logic and then run the uninstall script.
+=== Uninstall the Partner Solution
+Complete the following steps to uninstall the Partner Solution.
 
-==== Step 1: Run the Lambda *uninstall* functions for Immuta and Radiant Logic:
+==== Step 1: Run the Lambda *uninstall* functions for Immuta and Radiant Logic
 
-. Navigate to the Lambda Functions dashboard on the AWS Console
-. Select *data-fabric-security-immuta-uninstall* function
-. Under *Code* section, click on the *Test* button to create a test:
-   1. Enter an Event Name for the test
-   2. Click *Create*
-. Click on the *Test* button to run a test
-. Repeat steps 1-4 for *data-fabric-security-radiantlogic-uninstall*
+. Sign in to the AWS Management Console and open the https://console.aws.amazon.com/lambda/[AWS Lambda console^].
+. On the *Functions* page, choose the *data-fabric-security-immuta-uninstall* function.
+. On the *Code* tab, choose *Test*.
+. On the *Configure test event* window, enter an event name.
+. Choose *Save*.
+. Choose the *Test* button to run the test.
+. Navigate to the *Functions* page.
+. Choose the *data-fabric-security-radiantlogic-uninstall* function.
+. Repeat steps 3–6.
 
-==== Step 2: Remove the Deployment Stacks
+==== Step 2: Remove the deployment stacks
 
-1. Run the uninstall script to remove the solution. 
+To uninstall the deployment stacks, run the following command.
 [,bash]
 ----
 ./dfs-solution-uninstall.sh
