@@ -14,19 +14,13 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 * An architecture that spans two Availability Zones.
 * A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.*
 * In the public subnets, managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.*
-* Two Classic Load Balancers, one to distribute traffic to the Immuta service on Amazon Elastic Kubernetes (EKS) clusters, and another for the Radiant Logic service.
-* In the private subnets, three-node EKS clusters containing highly-available deployments of Immuta and Radiant Logic.
+* Two Classic Load Balancers, one each for the Immuta and RadiantOne services in the private subnets.
+* In the private subnets, three-node EKS clusters containing highly-available deployments of Immuta and RadiantOne.
 * Amazon EKS to provide the Kubernetes control plane for the clusters.
 * Endpoints for other AWS services to access the Amazon EKS Kubernetes API server.
 * Amazon CloudWatch to collect, store, access, and monitor logs.
 * Amazon Route 53 for a private hosted zone and resolvers.
-* AWS Lambda for functions that install Immuta and Radiant Logic.
-* AWS Secrets Manager, which encrypts, stores, and retrieves passwords.
+* AWS Lambda for functions that install Immuta and RadiantOne.
+* AWS Secrets Manager to encrypt, store, and retrieve passwords.
 
 [.small]#* You can choose to use an existing VPC during deployment. The existing VPC must include two private subnets in separate Availability Zones.#
-
-[#architecture2]
-.Partner Solution architecture for {partner-product-short-name} on AWS
-image::../docs/deployment_guide/images/data-fabric-pod-breakdown.png[Architecture]
-
-As shown in <<architecture2>>, this Partner Solution sets up the following:

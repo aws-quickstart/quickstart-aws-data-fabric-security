@@ -2,17 +2,52 @@
 
 == Postdeployment steps
 
-=== Immuta and Radiant Logic configuration
+=== Sign in to RadiantOne
 
-After deployment, refer to the following documentation to get started with Immuta and Radiant Logic.
+To connect to Radiant Logic you must either connect from inside the environment (Bastion Host) or configure your local DNS to point the Radiant Logic hostname to the Load Balancer for Radiant Logic.
 
-//TODO: add links to subjects covered in proposed Operational Guide
+. Using a browser, navigate to one of the following:
++
+[,bash]
+----
+http://radiantlogic.example.com:7070
+https://radiantlogic.example.com:7171
+----
++
+. Log in using the directory manager account
++
+*Username*: cn=directory manager
++
+*Password*: Password set in dev.yaml file during deployment
 
+image::../docs/operational_guide/images/Radiant-logic-login.PNG[RadiantLogicLogin]
+
+=== Sign in to Immuta
+...
+
+=== Immuta AWS GovCloud region support
+
+Immuta comes with standard AWS Regions support. Complete the following steps to configure AWS GovCloud support in Immuta.
+
+. In Immuta, choose *App Settings*.
+. Choose *Advanced Settings*.
+. Choose *Advanced Configuration*.
+. Enter the following in the *Advanced Configuration* text box.
++
+[,bash]
+----
+client:
+  awsRegions:
+    - us-gov-east-1
+    - us-gov-west-1
+----
++
+. Choose *Save*
 
 === Uninstall the Partner Solution
 To uninstall the Partner Solution, complete the following steps.
 
-==== Step 1: Run the Lambda *uninstall* functions for Immuta and Radiant Logic
+==== Step 1: Run the Lambda *uninstall* functions for Immuta and RadiantOne
 
 . Sign in to the AWS Management Console and open the https://console.aws.amazon.com/lambda/[AWS Lambda console^].
 . On the *Functions* page, choose the *data-fabric-security-immuta-uninstall* function.
@@ -50,21 +85,3 @@ To uninstall the deployment stacks, run the following command.
 * https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/data-policy-tutorial/#write-a-global-data-policy[Create a global data policy].
 * https://documentation.immuta.com/2023.1/4-connecting-data/managing-data-sources/local-policy-builder/#write-a-local-policy[Create a local policy^].
 
-=== Immuta AWS GovCloud region support
-
-Immuta comes with standard AWS Regions support. Complete the following steps to configure AWS GovCloud support in Immuta.
-
-. In Immuta, choose *App Settings*.
-. Choose *Advanced Settings*.
-. Choose *Advanced Configuration*.
-. Enter the following in the *Advanced Configuration* text box.
-+
-[,bash]
-----
-client:
-  awsRegions:
-    - us-gov-east-1
-    - us-gov-west-1
-----
-+
-. Choose *Save*

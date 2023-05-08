@@ -1,3 +1,3 @@
 // Include details about any licenses and how to sign up. Provide links as appropriate.
 
-This deployment requires licenses for Immuta and Radiant Logic. There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
+This deployment requires licenses for Immuta and RadiantOne. For more information, refer to the https://www.immuta.com/[Immuta^] and https://www.radiantlogic.com/[Radiant Logic^] websites, respectively. There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].

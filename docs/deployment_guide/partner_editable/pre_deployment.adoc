@@ -14,7 +14,7 @@ npm install -g aws-cdk
 For more information, refer to https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html[Getting started with the AWS CDK].
 
 . Load your AWS credentials into your development environment. You can do this with the AWS Command Line Interface (AWS CLI). For more information, refer to https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth[Authentication with AWS].
-. Obtain licenses for Immuta and Radiant Logic.
+. Obtain licenses for Immuta and RadiantOne. For more information, refer to the https://www.immuta.com/[Immuta^] and https://www.radiantlogic.com/[Radiant Logic^] websites, respectively.
 +
 NOTE: After purchasing an Immuta license, you will receive a password from Immuta. Enter the Immuta password for the `Instance.Password` parameter in `dev.yaml` during deployment.
 
