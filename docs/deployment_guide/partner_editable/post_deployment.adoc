@@ -31,3 +31,40 @@ To uninstall the deployment stacks, run the following command.
 ----
 ./dfs-solution-uninstall.sh
 ----
+
+== Additional information
+
+=== RadiantOne
+* Getting started
+*
+
+
+
+=== Immuta
+
+* Getting started
+* https://documentation.immuta.com/2023.1/2-configure-integration/additional-config/config-builder-guide/#use-existing-identity-access-manager[Configure Identity Manager^].
+* https://documentation.immuta.com/2023.1/4-connecting-data/creating-data-sources/storage-technologies/general/query-backed-tutorial/[Add a data source^].
+* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/policies-explained/#global-policies-in-immuta[Global policies in Immuta].
+* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/subscription-policy-tutorial/#write-a-global-subscription-policy[Create a global subscription policy^].
+* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/data-policy-tutorial/#write-a-global-data-policy[Create a global data policy].
+* https://documentation.immuta.com/2023.1/4-connecting-data/managing-data-sources/local-policy-builder/#write-a-local-policy[Create a local policy^].
+
+=== Immuta AWS GovCloud region support
+
+Immuta comes with standard AWS Regions support. Complete the following steps to configure AWS GovCloud support in Immuta.
+
+. In Immuta, choose *App Settings*.
+. Choose *Advanced Settings*.
+. Choose *Advanced Configuration*.
+. Enter the following in the *Advanced Configuration* text box.
++
+[,bash]
+----
+client:
+  awsRegions:
+    - us-gov-east-1
+    - us-gov-west-1
+----
++
+. Choose *Save*
