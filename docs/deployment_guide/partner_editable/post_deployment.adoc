@@ -4,26 +4,26 @@
 
 === Sign in to RadiantOne
 
-To connect to Radiant Logic you must either connect from inside the environment (Bastion Host) or configure your local DNS to point the Radiant Logic hostname to the Load Balancer for Radiant Logic.
+To connect to Radiant Logic you must either connect from inside the environment (bastion host) or configure your local DNS to point the RadiantOne hostname to the Load Balancer for RadiantOne.
 
-. Using a browser, navigate to one of the following:
+. Navigate to one of the following URLs.
 +
-[,bash]
-----
-http://radiantlogic.example.com:7070
-https://radiantlogic.example.com:7171
-----
+* http://radiantlogic.example.com:7070
 +
-. Log in using the directory manager account
-+
-*Username*: cn=directory manager
-+
-*Password*: Password set in dev.yaml file during deployment
+* https://radiantlogic.example.com:7171
 
-image::../docs/operational_guide/images/Radiant-logic-login.PNG[RadiantLogicLogin]
+. On the RadiantOne main control panel, enter username `cn=directory manager`.
+. Enter the password defined for the `RootPassword` parameter in `dev.yaml` before deployment. Refer to <<Predeployment steps>>, earlier in this guide.
+. Choose *Login*.
+
 
 === Sign in to Immuta
-...
+. Connect to `\https://immuta.<example.com>`. Replace `<example.com>` with the domain name entered for the `Domain` parameter in `dev.yaml` before deployment. Refer to <<Predeployment steps>>, earlier in this guide.
+. Enter an email address and password to create a new administrator account.
+. Choose ???.
+. On the *License* page, choose *Add license key*.
+. Enter the Immuta license provided by Immuta.
+. Choose *Save*.
 
 === Immuta AWS GovCloud region support
 
