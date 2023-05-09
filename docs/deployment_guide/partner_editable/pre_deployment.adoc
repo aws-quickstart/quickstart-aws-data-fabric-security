@@ -129,29 +129,29 @@ Edit the variables in `config/dev.yaml` to customize the deployment for your env
 | Default
 
 | Deploy                               | Enter `false` to not deploy Immuta.   | `true`
-| ChartVersion                         | Immuta Helm Chart version         | ""
-| ImmutaVersion                        | Version of Immuta to Install      | ""
-| ImageTag                             | Docker image tag                  | ""
-| Instance.Username                    | Immuta instance username          | ""
-| Instance.Password                    | Immuta instance password          | ""
-| Database.ImmutaDBPassword            | Database password                 | ""
-| Database.ImmutaDBSuperUserPassword   | Database superuser password       | ""
-| Database.ImmutaDBReplicationPassword | Database replication password     | ""
-| Database.ImmutaDBPatroniApiPassword  | Database Patroni API password     | ""
-| Query.ImmutaQEPassword               | Query engine password             | ""
-| Query.ImmutaQESuperUserPassword      | Query engine superuser password   | ""
-| Query.ImmutaQEReplicationPassword    | Query engine replication password | ""
-| Query.ImmutaQEPatroniApiPassword     | Query engine Patroni API password | ""
+| ChartVersion                         | Immuta Helm Chart version.         | `"4.95"`
+| ImmutaVersion                        | Version of Immuta to install.      | `"2022.4.3"`
+| ImageTag                             | Docker image tag.                  | `"2022.4.3"`
+| Instance.Username                    | Immuta instance user name.          | `"USERNAME"`
+| Instance.Password                    | Immuta instance password.          | `"PASSWORD"`
+| Database.ImmutaDBPassword            | Immuta database password.          | `"SECRET"`
+| Database.ImmutaDBSuperUserPassword   | Immuta database super user password.       | `"SECRET"`
+| Database.ImmutaDBReplicationPassword | Immuta database replication password.     | `"SECRET"`
+| Database.ImmutaDBPatroniApiPassword  | Immuta database Patroni API password .    | `"SECRET"`
+| Query.ImmutaQEPassword               | Query engine password.            | `"SECRET"`
+| Query.ImmutaQESuperUserPassword      | Query engine super user password.  | `"SECRET"`
+| Query.ImmutaQEReplicationPassword    | Query engine replication password. | `"SECRET"`
+| Query.ImmutaQEPatroniApiPassword     | Query engine Patroni API password. | `"SECRET"`
 |===
 
-==== Radiant Logic RadiantOne parameters
+==== RadiantOne parameters
 
 [%header,cols="2,6,1"]
 |===
 | Parameter    | Description                                 | Default
-| Deploy       | Boolean to deploy the component             | true
-| ZkImageTag | Zookeeper Image Tag                   | ""
-| FidImageTag | FID Image Tag                        | ""
-| License      | License for Radiant Logic                   | ""
-| RootPassword | Password to be used for the root admin user | ""
+| Deploy       | Enter `false` to not deploy RadiantOne.             | `true`
+| ZkImageTag | Zookeeper image tag.                   | `"3.5.8"`
+| FidImageTag | FID image tag.                        | `"7.4.4"`
+| License      | RadiantOne license.                  | `"\\{rlib\\}xXXXXXXXXXXXX"`
+| RootPassword | Root administrator user password. | `"Password1!"`
 |===
