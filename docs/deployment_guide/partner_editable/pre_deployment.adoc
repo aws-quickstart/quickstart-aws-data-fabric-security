@@ -3,7 +3,7 @@
 == Predeployment steps
 
 [%hardbreaks]
-. Install Node.js 18.0.0 or later. For more information, refer to https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Tutorial: Setting Up Node.js on an Amazon EC2 Instance].
+. Install Node.js 18.0.0 or later. For more information, refer to https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html[Tutorial: Setting Up Node.js on an Amazon EC2 Instance^].
 . Install AWS Cloud Development Kit (AWS CDK) using Node Package Manager (npm).
 +
 [,bash]

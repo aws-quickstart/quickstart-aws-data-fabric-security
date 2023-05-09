@@ -13,14 +13,13 @@ To connect to Radiant Logic you must either connect from inside the environment 
 * https://radiantlogic.example.com:7171
 
 . On the RadiantOne main control panel, enter username `cn=directory manager`.
-. Enter the password defined for the `RootPassword` parameter in `dev.yaml` before deployment. Refer to <<Predeployment steps>>, earlier in this guide.
+. Enter the password defined for the `RootPassword` parameter in `dev.yaml` before deployment. Refer to link:#_predeployment_steps[Predeployment steps], earlier in this guide.
 . Choose *Login*.
 
 
 === Sign in to Immuta
-. Connect to `\https://immuta.<example.com>`. Replace `<example.com>` with the domain name entered for the `Domain` parameter in `dev.yaml` before deployment. Refer to <<Predeployment steps>>, earlier in this guide.
+. Connect to `\https://immuta.<example.com>`. Replace `<example.com>` with the domain name entered for the `Domain` parameter in `dev.yaml` before deployment. Refer to link:#_predeployment_steps[Predeployment steps], earlier in this guide.
 . Enter an email address and password to create a new administrator account.
-. Choose ???.
 . On the *License* page, choose *Add license key*.
 . Enter the Immuta license provided by Immuta.
 . Choose *Save*.
@@ -70,18 +69,21 @@ To uninstall the deployment stacks, run the following command.
 == Additional information
 
 === RadiantOne
-* Getting started
-*
-
-
+* https://support.radiantlogic.com/hc/en-us[Radiant Logic Help Center^]
+* https://developer.radiantlogic.com/v7.4/architect-guide/getting-started-with-radiantone/[Getting started^]
+* https://developer.radiantlogic.com/global-identity-builder-guide/introduction/[Global identities^]
+* https://developer.radiantlogic.com/global-identity-builder-guide/create-projects/create-project/[Create a global identity project^]
+* https://developer.radiantlogic.com/global-identity-builder-guide/create-projects/create-project/[Add an identity source to a project^]
+* https://developer.radiantlogic.com/global-identity-builder-guide/create-projects/upload/[Upload and sync data sources^]
+* https://developer.radiantlogic.com/global-identity-builder-guide/concepts/#global-identity-viewer[View global identities^]
 
 === Immuta
 
-* Getting started
-* https://documentation.immuta.com/2023.1/2-configure-integration/additional-config/config-builder-guide/#use-existing-identity-access-manager[Configure Identity Manager^].
-* https://documentation.immuta.com/2023.1/4-connecting-data/creating-data-sources/storage-technologies/general/query-backed-tutorial/[Add a data source^].
-* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/policies-explained/#global-policies-in-immuta[Global policies in Immuta].
-* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/subscription-policy-tutorial/#write-a-global-subscription-policy[Create a global subscription policy^].
-* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/data-policy-tutorial/#write-a-global-data-policy[Create a global data policy].
-* https://documentation.immuta.com/2023.1/4-connecting-data/managing-data-sources/local-policy-builder/#write-a-local-policy[Create a local policy^].
+* https://documentation.immuta.com/2023.1/[Immuta documentation^]
+* https://documentation.immuta.com/2023.1/2-configure-integration/additional-config/config-builder-guide/#use-existing-identity-access-manager[Configure Identity Manager^]
+* https://documentation.immuta.com/2023.1/4-connecting-data/creating-data-sources/storage-technologies/general/query-backed-tutorial/[Add a data source^]
+* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/policies-explained/#global-policies-in-immuta[Global policies in Immuta]
+* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/subscription-policy-tutorial/#write-a-global-subscription-policy[Create a global subscription policy^]
+* https://documentation.immuta.com/2023.1/3-writing-global-policies-for-compliance/global-policy-builder/data-policy-tutorial/#write-a-global-data-policy[Create a global data policy]
+* https://documentation.immuta.com/2023.1/4-connecting-data/managing-data-sources/local-policy-builder/#write-a-local-policy[Create a local policy^]
 

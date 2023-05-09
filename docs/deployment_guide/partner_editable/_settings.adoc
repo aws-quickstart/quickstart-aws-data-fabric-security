@@ -1,7 +1,7 @@
 :partner-solution-project-name: quickstart-aws-data-fabric-security
 :partner-solution-github-org: aws-quickstart
-:partner-product-name: AWS Data Fabric Security
-:partner-product-short-name: Data Fabric Security
+:partner-product-name: Identity Aggregation and Attribute-Based Control
+:partner-product-short-name: Identity Aggregation and Attribute-Based Control
 :partner-company-name: Immuta and Radiant Logic
 :doc-month: May
 :doc-year: 2023
