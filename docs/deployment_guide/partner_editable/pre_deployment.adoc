@@ -81,17 +81,17 @@ DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityekscluster
 
 Edit the variables in `config/dev.yaml` to customize the deployment for your environment.
 
-==== Global
+==== Global parameters
 
 [%header,cols="2,6,1"]
 |===
 |Parameter |Description |Default
-|AWSAccountID |ID of the AWS Account to deploy solution |""
-|AWSRegion |AWS region to deploy solution |""
-|Domain |Domain name that will be used for the solution |""
+|AWSAccountID |AWS account ID. |`123456789012`
+|AWSRegion |AWS Region. |`us-east-1`
+|Domain |Domain name. |`company.com`
 |===
 
-==== Networking
+==== Networking parameters
 
 [%header,cols="2,6,1"]
 |===
@@ -99,13 +99,13 @@ Edit the variables in `config/dev.yaml` to customize the deployment for your env
 | Description
 | Default
 
-| VpcId     | ID of the VPC to use for the deployment (leave as empty string if you want to create a new VPC) | ""
-| SubnetA   | Private subnet in AZ1 (leave as empty string if you want to create a new subnet)                | ""
-| SubnetB   | Private subnet in AZ2 (leave as empty string if you want to create a new subnet)                | ""
-| MaxAZs    | Maximum availability zones                                                            | 2
+| VpcId     | Enter an existing VPC ID or leave blank (`""`) to create a new VPC. | `"vpc-123456789abcdefgh"`
+| SubnetA   | Private subnet in Availability Zone 1. To create a new subnet, delete default entry and leave blank (`""`).                | `"subnet-123456789abcdefg"`
+| SubnetB   | Private subnet in Availability Zone 2. To create a new subnet, delete default entry and leave blank (`""`).                | `"subnet-abcdefgh123456789"`
+| MaxAZs    | Maximum number of Availability Zones.                                                            | `"2"`
 |===
 
-==== EKS
+==== Amazon EKS parameters
 
 [%header,cols="2,6,1"]
 |===
@@ -113,14 +113,14 @@ Edit the variables in `config/dev.yaml` to customize the deployment for your env
 | Description
 | Default
 
-| Clustername | Custom name for the EKS cluister | "data-fabric-security-eks-cluster"
-| EKSAdminRole | The IAM principle that creates the cluster and is automatically granted `system:masters` permissions in the cluster's RBAC configuration in the Amazon EKS control plane (This ARN must be an existing role in the account with the AmazonEKSClusterPolicy attached) | ""
-| EKSEndpointAccess | EKS endpoint access type (Valid inputs are "PUBLIC", "PRIVATE", or "" for both) | ""
-| InstanceType      | Instance type for the EKS cluster                                               | "m5.large"
-| ClusterSize       | Size of the EKS cluster                                                         | 3
+| Clustername | Custom name for the EKS cluster. | `"data-fabric-security-eks-cluster"`
+| EKSAdminRole | Amazon Resource Name (ARN) of an existing IAM role in the AWS account with `AmazonEKSClusterPolicy` attached. Used to create the EKS cluster, this role is automatically granted `system:masters` permissions in the cluster's role-based access control (RBAC) configuration in the Amazon EKS control plane. | `"arn:aws-us-gov:iam::123456789012:role/aws-service-role/eks.amazonaws.com/EKSAdminRole"`
+| EKSEndpointAccess | Amazon EKS endpoint access type (`"PUBLIC"`, `"PRIVATE"`, or `""` for both). | `"PRIVATE"`
+| InstanceType      | EKS cluster instance type.                                               | `"m5.large"`
+| ClusterSize       | EKS cluster size.                                                         | `"3"`
 |===
 
-==== Immuta
+==== Immuta parameters
 
 [%header,cols="2,6,1"]
 |===
@@ -144,7 +144,7 @@ Edit the variables in `config/dev.yaml` to customize the deployment for your env
 | Query.ImmutaQEPatroniApiPassword     | Query engine Patroni API password | ""
 |===
 
-==== Radiant Logic
+==== Radiant Logic RadiantOne parameters
 
 [%header,cols="2,6,1"]
 |===
