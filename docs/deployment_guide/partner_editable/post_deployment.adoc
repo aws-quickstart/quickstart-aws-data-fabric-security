@@ -4,13 +4,13 @@
 
 === Sign in to RadiantOne
 
-To connect to Radiant Logic you must either connect from inside the environment (bastion host) or configure your local DNS to point the RadiantOne hostname to the Load Balancer for RadiantOne.
+You must connect to RadiantOne from inside the environment (bastion host) or by configuring your local DNS to point the RadiantOne hostname to the RadiantOne load balancer.
 
 . Navigate to one of the following URLs.
 +
-* http://radiantlogic.example.com:7070
+* `\http://radiantlogic.example.com:7070`
 +
-* https://radiantlogic.example.com:7171
+* `\https://radiantlogic.example.com:7171`
 
 . On the RadiantOne main control panel, enter username `cn=directory manager`.
 . Enter the password defined for the `RootPassword` parameter in `dev.yaml` before deployment. Refer to link:#_predeployment_steps[Predeployment steps], earlier in this guide.
@@ -26,7 +26,7 @@ To connect to Radiant Logic you must either connect from inside the environment 
 
 === Immuta AWS GovCloud region support
 
-Immuta comes with standard AWS Regions support. Complete the following steps to configure AWS GovCloud support in Immuta.
+Immuta comes with support for standard AWS Regions. Complete the following steps to configure AWS GovCloud support in Immuta.
 
 . In Immuta, choose *App Settings*.
 . Choose *Advanced Settings*.
@@ -58,7 +58,7 @@ To uninstall the Partner Solution, complete the following steps.
 . Choose the *data-fabric-security-radiantlogic-uninstall* function.
 . Repeat steps 3–6.
 
-==== Step 2: Remove the deployment stacks
+==== Step 2: Uninstall the deployment stacks
 
 To uninstall the deployment stacks, run the following command.
 [,bash]

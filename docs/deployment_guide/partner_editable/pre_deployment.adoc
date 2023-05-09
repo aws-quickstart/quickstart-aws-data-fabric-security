@@ -20,7 +20,7 @@ NOTE: After purchasing an Immuta license, you will receive a password from Immut
 
 == Deployment steps
 [%hardbreaks]
-. Navigate to the AWS Data Fabric Security root folder.
+. Navigate to the {partner-product-name} root folder.
 +
 [,bash]
 ----
@@ -74,8 +74,6 @@ DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityekscluster
 DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityeksclusterConfigCommand978D3532 = aws eks update-kubeconfig --name data-fabric-security-eks-cluster --region us-gov-west-1 --role-arn arn:aws-us-gov:iam::123456789012:role/DataFabricStackdatafabric-datafabricsecurityeksclu-14T5IMKRMS7JT
 DataFabricStackdatafabricsecurityeksclusterCA551CED.datafabricsecurityeksclusterGetTokenCommand1D6ABA05 = aws eks get-token --cluster-name data-fabric-security-eks-cluster --region us-gov-west-1 --role-arn arn:aws-us-gov:iam::123456789012:role/DataFabricStackdatafabric-datafabricsecurityeksclu-14T5IMKRMS7JT
 ----
-
-. See the Operational Guide for additional configuration of Radiant Logic and
 
 === Deployment configuration
 
