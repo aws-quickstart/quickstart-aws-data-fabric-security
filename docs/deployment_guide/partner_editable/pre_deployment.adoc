@@ -128,7 +128,7 @@ Edit the variables in `config/dev.yaml` to customize the deployment for your env
 | Description
 | Default
 
-| Deploy                               | Boolean to deploy the component   | true
+| Deploy                               | Enter `false` to not deploy Immuta.   | `true`
 | ChartVersion                         | Immuta Helm Chart version         | ""
 | ImmutaVersion                        | Version of Immuta to Install      | ""
 | ImageTag                             | Docker image tag                  | ""

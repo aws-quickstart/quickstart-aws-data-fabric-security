@@ -1,24 +1,3 @@
 This guide covers the information you need to deploy the {partner-product-name} Partner Solution in the AWS Cloud.
 
-Welcome to the Data Fabric Security Quick Start documentation site. 
-
-This respository contains the source code for the Data Fabric Security. It can be used by AWS customers, partners, and internal AWS teams to configure, deploy and manage identity aggregation and data governance policy tools.
-
-== What is Data Fabric Security?
-
-Data Fabric Security on AWS helps you deliver scalable data security and governance, enabling increased interoperability, modernization, and informed decision-making across a myriad of organizations and environments. Data Fabric Security allows customers to rapidly deploy and integrate container-based identity, credential, and access management solutions with a data access and governance platform.
-
-The example architecture leverages AWS Partner Network capabilities from Radiant Logic, Inc. and Immuta Inc. deployed using AWS CDK. The Radiant Logic component of the solution aggregates multiple identity stores to create a global profile which can then be tagged with attributes (such as clearance, area of responsibility, command, etc). Any attributes, would then be pulled into the data access and governance component of the solution – provided by Immuta’s data access platform. There, fine grained attribute-based access control (ABAC) can be applied using Immuta’s flexible data policy builder.  
-
-== What can I do with this Quick Start?
-
-Customers can use this Quick Start to easily architect and deploy an EKS Cluster with Immuta and Radiant Logic’s platforms. Specifically, customers can leverage the Data Fabric Security module to:
-
-* Deploy Well-Architected EKS cluster across any number of accounts and regions.
-* Manage identity store integration with data policy builders, including edge deployed identity stores
-* Manage and load licenses for Immuta and Radiant Logic’s software
-* Create Lambda functions to enable uninstalling the DFS deployment
-
-For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
-
 // For information about using this Partner Solution for migrations, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/migration/index.html[Migration Guide^].
