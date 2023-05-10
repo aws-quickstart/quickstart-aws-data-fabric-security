@@ -21,6 +21,5 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 * Amazon CloudWatch to collect, store, access, and monitor logs.
 * Amazon Route 53 for a private hosted zone and resolvers.
 * AWS Lambda for functions that install Immuta and RadiantOne.
-* AWS Secrets Manager to encrypt, store, and retrieve passwords.
 
 [.small]#* You can choose to use an existing VPC during deployment. The existing VPC must include two private subnets in separate Availability Zones.#
