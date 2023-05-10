@@ -59,10 +59,12 @@ export class EksBlueprintsStack {
 
     // Create EKS add-ons.
     const addOns: blueprints.ClusterAddOn[] = [
-      new addons.VpcCniAddOn('v1.12.6-eksbuild.1'),
+      new addons.VpcCniAddOn(),
       new addons.CoreDnsAddOn('v1.9.3-eksbuild.2'),
       new addons.KubeProxyAddOn('v1.25.6-eksbuild.2'),
-      new addons.EbsCsiDriverAddOn('v1.17.0-eksbuild.1'),
+      new addons.EbsCsiDriverAddOn({
+        version: 'v1.17.0-eksbuild.1'
+      }),
       new addons.ExternalDnsAddOn({
         hostedZoneResources: [props.domain],
         values: {
