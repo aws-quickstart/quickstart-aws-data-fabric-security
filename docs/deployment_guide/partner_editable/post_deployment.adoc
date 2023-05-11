@@ -13,12 +13,12 @@ You must connect to RadiantOne from inside the environment (bastion host) or by 
 * `\https://radiantlogic.example.com:7171`
 
 . On the RadiantOne main control panel, enter username `cn=directory manager`.
-. Enter the password defined for the `RootPassword` parameter in `dev.yaml` before deployment. Refer to link:#_predeployment_steps[Predeployment steps], earlier in this guide.
+. For the password, enter the value of the `RootPassword` parameter in `dev.yaml`. Refer to link:#_deployment_configuration[Deployment configuration], earlier in this guide.
 . Choose *Login*.
 
 
 === Sign in to Immuta
-. Connect to `\https://immuta.<example.com>`. Replace `<example.com>` with the domain name entered for the `Domain` parameter in `dev.yaml` before deployment. Refer to link:#_predeployment_steps[Predeployment steps], earlier in this guide.
+. Connect to `\https://immuta.<example.com>`. Replace `<example.com>` with the domain name entered for the `Domain` parameter in `dev.yaml`. Refer to link:#_deployment_configuration[Deployment configuration], earlier in this guide.
 . Enter an email address and password to create a new administrator account.
 . On the *License* page, choose *Add license key*.
 . Enter the Immuta license provided by Immuta.
@@ -66,7 +66,7 @@ To uninstall the deployment stacks, run the following command.
 ./dfs-solution-uninstall.sh
 ----
 
-== Additional information
+== Additional resources
 
 === RadiantOne
 * https://support.radiantlogic.com/hc/en-us[Radiant Logic Help Center^]
