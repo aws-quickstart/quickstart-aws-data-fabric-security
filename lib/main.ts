@@ -154,6 +154,12 @@ export class MainStack extends Stack {
       'Suppressing K8s public API endpoint as configuration is external',
     );
 
+    CdkNagSuppressions.createStackCdkNagSuppressions(
+      this, 
+      'CdkNagValidationFailure', 
+      'Suppressing warnings against not providing CIDR block to deploy VPC',
+    );
+
     this.serviceRoleCdkNagSuppression();
   }
 

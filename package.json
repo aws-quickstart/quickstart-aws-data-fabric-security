@@ -28,8 +28,8 @@
   "dependencies": {
     "@aws-cdk/aws-secretsmanager": "^1.170.0",
     "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.63",
-    "@aws-quickstart/eks-blueprints": "^1.6.1",
-    "aws-cdk-lib": "2.51.1",
+    "@aws-quickstart/eks-blueprints": "1.7.2",
+    "aws-cdk-lib": "2.76.0",
     "cdk-nag": "^2.18.4",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.16"
