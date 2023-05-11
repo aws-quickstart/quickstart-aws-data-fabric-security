@@ -18,6 +18,7 @@ async function Main() {
         account: Config.Current.AWSAccountID,
         region: Config.Current.AWSRegion
       },
+      description: '(qs-1sqf96ugi)'
     });
   });
   
