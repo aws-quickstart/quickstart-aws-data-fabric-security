@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.17">
+<meta name="description" content="AWS DataFabric Security Operational Guide on AWS">
+<meta name="keywords" content="Partner Solution, AWS, AWS DataFabric Security">
+<title>AWS DataFabric Security on AWS—Operational Guide</title>
+<style>
+/* Import the main IA stylesheet */
+@import url("../docs/boilerplate/.css/ia-css.css");
+
+/* Modify the image location for an additional level */
+#toc.toc2 #toctitle {
+  background-image: url("../docs/boilerplate/.images/AWS-Logo.svg");
+}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#_overview">Overview</a></li>
+<li><a href="#_radiant_logic_guide">Radiant Logic Guide</a>
+<ul class="sectlevel2">
+<li><a href="#_logging_in">Logging in</a></li>
+<li><a href="#_identity_sources">Identity Sources</a></li>
+<li><a href="#_global_identity">Global Identity</a></li>
+</ul>
+</li>
+<li><a href="#_immuta_guide">Immuta Guide</a>
+<ul class="sectlevel2">
+<li><a href="#_initial_setup">Initial setup</a></li>
+<li><a href="#_configure_identity_manager">Configure Identity Manager</a></li>
+<li><a href="#_data_sources">Data Sources</a></li>
+<li><a href="#_policies">Policies</a></li>
+<li><a href="#_govcloud_region_support">GovCloud Region Support</a></li>
+</ul>
+</li>
+<li><a href="#_feedback">Feedback</a></li>
+<li><a href="#_notices">Notices</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<h2 id="_aws_datafabric_security_on_aws" class="discrete text-center">AWS DataFabric Security on AWS</h2>
+<h2 id="_partner_solution_operational_guide" class="discrete text-left text-center">Partner Solution Operational Guide</h2>
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://aws-quickstart.s3.amazonaws.com/docs/operational-guide/aws-quickstart-operational-graphic.png" alt="QS" width="80" height="80">
+</div>
+</div>
+<div class="paragraph text-center">
+<p><strong>April 2023</strong><br>
+<em>Jenifer Wang, Solution Acceleration Team (DoD)</em><br>
+<em>Troy Ameigh, AWS Integration &amp; Automation team</em><br></p>
+</div>
+<div class="imageblock text-left image-container">
+<div class="content">
+<img src="https://aws-quickstart.s3.amazonaws.com/quickstart-aws-data-fabric-security/docs/boilerplate/.images/aws-quickstart-operational-graphic.png" alt="">
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Visit our <a href="https://github.com/aws-quickstart/quickstart-aws-data-fabric-security" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this Partner Solution. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph text-left">
+<p>This Partner Solution was created by Immuta and Radiant Logic in collaboration with Amazon Web Services (AWS). <a href="https://aws.amazon.com/solutions/partners/" target="_blank" rel="noopener">Partner Solutions</a> are automated reference deployments that help people deploy popular technologies on AWS according to AWS best practices. If you&#8217;re unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Data Fabric Security is intended to be configured to support numerous use cases and integrate a variety of Identity stores and data stores. The diagram below shows an example of how a number of data stores and identity stores can be integrated with Data Fabric Security.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="docs/deployment_guide/images/extended-architecture.pptx" alt="Extended-Architecture">
+</div>
+</div>
+<div class="paragraph">
+<p>The steps in this guide are a brief introduction to the configuration of Radiant Logic and Immuta products. These are not intended to replace the documentation provided by the vendors and do not cover all use cases. For additional configuration and administration steps, please refer to the Radiant Logic and/or Immuta documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_radiant_logic_guide">Radiant Logic Guide</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The purpose of this guide it to provide additional instructions to get started with Radiant Logic. For more advanced instructions and implementations, please refer to the <a href="https://support.radiantlogic.com/hc/en-us">Radiant Logic Documentation</a></p>
+</div>
+<div class="sect2">
+<h3 id="_logging_in">Logging in</h3>
+<div class="paragraph">
+<p>To connect to Radiant Logic you must either connect from inside the environment (Bastion Host) or configure your local DNS to point the Radiant Logic hostname to the Load Balancer for Radiant Logic.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Using a browser, navigate to one of the following:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">http://radiantlogic.example.com:7070
+https://radiantlogic.example.com:7171</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Log in using the directory manager account</p>
+<div class="paragraph">
+<p><strong>Username</strong>: cn=directory manager</p>
+</div>
+<div class="paragraph">
+<p><strong>Password</strong>: Password set in dev.yaml file during deployment</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/Radiant-logic-login.PNG" alt="RadiantLogicLogin">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_identity_sources">Identity Sources</h3>
+<div class="paragraph">
+<p>Radiant Logic supports multiple data sources from LDAP (eg. Active Directory), DB (eg. MySQL), and Custom data store types (eg. REST API).
+<strong>All Data Sources are optional, but in order to setup a Global Identity you need a minimum of one Identity Store.</strong></p>
+</div>
+<div class="sect3">
+<h4 id="_adding_an_ldap_store_active_directory">Adding an LDAP Store - Active Directory</h4>
+<div class="paragraph">
+<p>This is a basic Active Directory LDAP data source configuration, for more information and options please refer to the Radiant Logic documentation.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a service account in your Active Directory, this is just a normal user account and no extra permissions are necessary.</p>
+</li>
+<li>
+<p>Click on <strong>Settings</strong> &#8594; <strong>Server Backend</strong> &#8594; <strong>LDAP Data Source</strong> &#8594; <strong>Add</strong></p>
+</li>
+<li>
+<p>Fill out the <strong>Add LDAP Data Source</strong> form:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><strong>Data Source Name</strong>: A Friendly name for the directory</p>
+</li>
+<li>
+<p><strong>Host Name</strong>: Fully Qualified Domain Name for your AD (if you use a DC name or IP address the DC will be a single point of failure)</p>
+</li>
+<li>
+<p><strong>Bind DN</strong>: The distinguishedName of the service account created in step 1</p>
+</li>
+<li>
+<p><strong>Base DN</strong>: the distinguishedName of the OU your identities are located in (can be a top level OU with nested OUs)</p>
+</li>
+<li>
+<p><strong>Data Source Type</strong>: AD2008</p>
+</li>
+<li>
+<p><strong>Port</strong>: 389 for plain text or 636 for SSL (if using SSL, also check the box for SSL)</p>
+</li>
+<li>
+<p><strong>Bind Password</strong>: the password for the service account created in step 1</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Click on <strong>test Connection</strong> to verify your configuration/network connectivity</p>
+</li>
+<li>
+<p>Click on <strong>Save</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>example config:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/active-directory-ldap-config.PNG" alt="ADldapConfig">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_adding_additional_ldap_stores">Adding additional LDAP Stores</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a service account in your Directory</p>
+</li>
+<li>
+<p>Click on <strong>Settings</strong> &#8594; <strong>Server Backend</strong> &#8594; <strong>LDAP Data Source</strong> &#8594; <strong>Add</strong></p>
+</li>
+<li>
+<p>Fill out the <strong>Add LDAP Data Source</strong> form:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><strong>Data Source Name</strong>: A Friendly name for the directory</p>
+</li>
+<li>
+<p><strong>Host Name</strong>: Fully qualified host name or IP address for your directory</p>
+</li>
+<li>
+<p><strong>Bind DN</strong>: The distinguishedName of the service account created in step 1</p>
+</li>
+<li>
+<p><strong>Base DN</strong>: the distinguishedName of the OU your identities are located in (can be a top level OU with nested OUs)</p>
+</li>
+<li>
+<p><strong>Data Source Type</strong>: Select the Directory type or LDAP if your particular directory is not listed</p>
+</li>
+<li>
+<p><strong>Port</strong>: 389 for plain text or 636 for SSL</p>
+</li>
+<li>
+<p><strong>Bind Password</strong>: the password for the service account created in step 1</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Click on <strong>test Connection</strong> to verify your configuration/network connectivity</p>
+</li>
+<li>
+<p>Click on <strong>Save</strong></p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_adding_a_database_store">Adding a Database Store</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click on <strong>Settings</strong> &#8594; <strong>Server Backend</strong> &#8594; <strong>DB Data Source</strong> &#8594; <strong>Add</strong></p>
+</li>
+<li>
+<p>Fill out the <strong>Add DB Data Source</strong> form</p>
+</li>
+<li>
+<p>Click on <strong>Save</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>&nbsp;&nbsp;&nbsp;&nbsp;example config:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/sql-connection.PNG" alt="sqlConnection">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_adding_a_custom_store">Adding a Custom Store</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click on <strong>Settings</strong> &#8594; <strong>Server Backend</strong> &#8594; <strong>Custom Data Source</strong> &#8594; <strong>Add Custom</strong></p>
+</li>
+<li>
+<p>Fill out the <strong>Add Custom Data Source</strong> form</p>
+</li>
+<li>
+<p>Click on <strong>Save</strong></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_global_identity">Global Identity</h3>
+<div class="paragraph">
+<p>Global Identity is a feature within Radiant Logic that allows you to correlate users from various identity sources and generates a Global Profile that defines the final view of the correlated identity sources.</p>
+</div>
+<div class="paragraph">
+<p>Steps to create a global identity:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a global identity project</p>
+</li>
+<li>
+<p>Add an identity source to the project</p>
+</li>
+<li>
+<p>Upload and sync the data sources in the project</p>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_create_a_global_identity_project">Create a Global Identity Project</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click on <strong>Wizards</strong> &#8594; <strong>Global Identity Builder</strong> &#8594; <strong>New Project</strong></p>
+</li>
+<li>
+<p>Complete the <strong>Project</strong> form</p>
+</li>
+<li>
+<p>On the right side, add the Custom Attributes you are interested in including as part of the Global Profile</p>
+</li>
+<li>
+<p>Input your Attribute value in the text field and select <strong>Add Custom Attribute</strong> for each custom attribute you wish to include</p>
+</li>
+<li>
+<p>Click on <strong>Save</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>example config:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/global-identity-setup.PNG" alt="GlobalIdentitySetup">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_add_an_identity_source_to_project_ad_example">Add an Identity Source to Project - AD example</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click on <strong>Define a new Identity Source</strong></p>
+</li>
+<li>
+<p>Complete the Identity Source form:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><strong>Data Source</strong>: Select your previously configured Identity Store</p>
+</li>
+<li>
+<p><strong>Identity Object</strong>: user</p>
+</li>
+<li>
+<p><strong>Base DN</strong>: Select previously created base DN during ldap config</p>
+</li>
+<li>
+<p><strong>Display/Search Attribute</strong>: mail</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Click on <strong>Save</strong></p>
+</li>
+<li>
+<p>In <strong>Mapping Definitions</strong>, click on <strong>Auto</strong> to auto map attributes</p>
+</li>
+<li>
+<p>Click <strong>OK</strong> when the warning pops up</p>
+</li>
+<li>
+<p>Click on <strong>Save</strong> and <strong>Save</strong> again</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>example config:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/ad-identity-source.PNG" alt="ADIdentitySource">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_upload_and_sync_data_sources">Upload and Sync Data Sources</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click on <strong>Upload/Sync</strong> in the Global Identity Project</p>
+</li>
+<li>
+<p>Click on <strong>Upload All</strong> (Note: You can use Bulk Upload or Single Upload)</p>
+</li>
+<li>
+<p>On successful sync, the Status should be in FINISHED state</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_view_global_identities">View Global Identities</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the global profile, click on <strong>Identities Browser</strong></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_immuta_guide">Immuta Guide</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The purpose of this guide it to provide additional instructions to get started with Immuta. For more advanced instructions and implementations, please refer to the <a href="https://documentation.immuta.com">Immuta Documentation</a></p>
+</div>
+<div class="sect2">
+<h3 id="_initial_setup">Initial setup</h3>
+<div class="sect3">
+<h4 id="_log_in_to_immuta">Log in to Immuta</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Using a browser, connect to:</p>
+<div class="paragraph">
+<p><a href="https://immuta.example.com/" class="bare">https://immuta.example.com/</a> using the domian name specified when deploying DFS</p>
+</div>
+</li>
+<li>
+<p>You will be prompted to create an admin account.</p>
+<div class="paragraph">
+<p>Provide an email address and password for the new admin account.</p>
+</div>
+</li>
+<li>
+<p>You will now be sent to the licenses page, click <strong>Add License Key</strong></p>
+</li>
+<li>
+<p>Copy/paste your immuta license into the input box</p>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/immuta-add-license-key.png" alt="LicenseInput">
+</div>
+</div>
+</li>
+<li>
+<p>Click Save</p>
+</li>
+<li>
+<p>On successful configuration of the license key, you should see that your license has been added</p>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/immuta-view-license-key.png" alt="LicenseView">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_identity_manager">Configure Identity Manager</h3>
+<div class="paragraph">
+<p>The Identity Manager is an offering in Immuta that provides “authentication and fine-grained user entitlement”. Since we are using Radiant Logic as the Identity Provider for Data Fabric, we will need to configure Immuta’s Identity Manager. Follow the steps below to configure the Identity Manager:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the left side navigation, click on App Settings</p>
+</li>
+<li>
+<p>Click <strong>1 Identity Management</strong></p>
+</li>
+<li>
+<p>Inside Identity and Access Management (IAM), click on <strong>Add IAM</strong></p>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/immuta-iam.PNG" alt="ImmutaIam">
+</div>
+</div>
+</li>
+<li>
+<p>Enter “RadiantLogic” for Display Name and select “LDAP/Active Directory” as Identity Provider Type</p>
+</li>
+<li>
+<p>The form will expand after the selection. Complete the remaining form as shown below:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Complete the <strong>Credentials</strong> and <strong>Options</strong></p>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/immuta-to-radiantlogic.png" alt="ImmutaToRadiantLogic">
+</div>
+</div>
+</li>
+<li>
+<p>Check <strong>Sync attributes from LDAP/Active Directory to Immuta</strong></p>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>Add all attrubutes to be used by Immuta by clicking <strong>Add Another Attribute</strong> and entering the attribute information for each attribute.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Check <strong>Make Default IAM</strong></p>
+</li>
+<li>
+<p>Complete the process to <strong>Test Connection</strong>, <strong>Test User Login</strong>, and <strong>Test LDAP Sync</strong>. Once all tests are successful, click on Save (left panel).</p>
+<div class="imageblock">
+<div class="content">
+<img src="docs/operational_guide/images/immuta-attribute-mapping.PNG" alt="ImmutaAttributeMapping">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_sources">Data Sources</h3>
+<div class="paragraph">
+<p>Immuta supports the ability to connect to query-backed and object-based data sources.</p>
+</div>
+<div class="sect3">
+<h4 id="_adding_a_data_source">Adding a Data Source</h4>
+<div class="paragraph">
+<p>The following are steps to add a data source:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the left side navigation, click on <strong>Data Sources</strong></p>
+</li>
+<li>
+<p>Click on <strong>+ New Data Source</strong></p>
+</li>
+<li>
+<p>Select the <strong>Storage Technology</strong> of your data source</p>
+</li>
+<li>
+<p>Complete <strong>Connection Information</strong> of the data source</p>
+</li>
+<li>
+<p>Test the connection</p>
+</li>
+<li>
+<p>Complete the <strong>Connection Population</strong></p>
+</li>
+<li>
+<p>Complete the <strong>Basic Information</strong></p>
+</li>
+<li>
+<p>Opt to set up <strong>Schema Monitoring</strong> and <strong>Advanced Options</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>More details on data sources can be found here:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://documentation.immuta.com/4-connecting-data/creating-data-sources/storage-technologies/general/query-backed-tutorial/">Query-backed Data Sources</a></p>
+</li>
+<li>
+<p><a href="https://documentation.immuta.com/4-connecting-data/creating-data-sources/storage-technologies/general/object-backed-tutorial/">Object-backed Data Sources</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_policies">Policies</h3>
+<div class="paragraph">
+<p>Policies are managed and applied to data sources in Immuta to restrict access to data.</p>
+</div>
+<div class="paragraph">
+<p>Types of policies defined in Immuta:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Global Policies - applied to all data sources across an organization</p>
+</li>
+<li>
+<p>Global Subscription Policies - applied to subscribers</p>
+</li>
+<li>
+<p>Global Data Policies - applied to all data users</p>
+</li>
+<li>
+<p>Local Policies - applied to a specific data source</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_creating_a_global_subscription_policy">Creating a Global Subscription Policy</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the left side navigation, click on <strong>Policies</strong></p>
+</li>
+<li>
+<p>Select <strong>Subscription Policies</strong></p>
+</li>
+<li>
+<p>Click on <strong>+ Add Subscription Policy</strong></p>
+</li>
+<li>
+<p>Complete the Global Subscription Policy Builder form</p>
+</li>
+<li>
+<p>Click on <strong>Create Policy</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Tutorial for <a href="https://documentation.immuta.com/3-writing-global-policies-for-compliance/global-policy-builder/subscription-policy-tutorial/">Global Policy Subscription</a></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_creating_a_global_data_policy">Creating a Global Data Policy</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the left side navigation, click on <strong>Policies</strong></p>
+</li>
+<li>
+<p>Select <strong>Data Policies</strong></p>
+</li>
+<li>
+<p>Click on <strong>+ Add Data Policy</strong></p>
+</li>
+<li>
+<p>Complete the Global Data Policy Builder form</p>
+</li>
+<li>
+<p>Click on <strong>Create Policy</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Tutorial for <a href="https://documentation.immuta.com/3-writing-global-policies-for-compliance/global-policy-builder/data-policy-tutorial/">Global Data Policy</a></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_creating_a_local_policy">Creating a Local Policy</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>On the left side navigation, click on <strong>Data Sources</strong></p>
+</li>
+<li>
+<p>Select the data source you would like to create a local policy for</p>
+</li>
+<li>
+<p>Select <strong>Policies</strong></p>
+</li>
+<li>
+<p>Click on <strong>+ New Policy</strong></p>
+</li>
+<li>
+<p>Complete the Policy Builder form</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You will need to log into the users that have the attributes you need before Immuta can populate the attributes
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Click on <strong>Create</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Tutorial for <a href="https://documentation.immuta.com/2022.4/4-connecting-data/managing-data-sources/local-policy-builder/">Local Policy</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_govcloud_region_support">GovCloud Region Support</h3>
+<div class="paragraph">
+<p>Immuta comes with standard regions support out of the box so you will need to set up advanced configuration to enable the service endpoints (eg. S3 data sources). Follow the steps below for GovCloud region support:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to <strong>App Settings</strong> on the left hand navigation</p>
+</li>
+<li>
+<p>Expand <strong>Advanced Settings</strong></p>
+</li>
+<li>
+<p>Click on <strong>Advanced Configuration</strong></p>
+</li>
+<li>
+<p>Modify the <strong>Advanced Configuration</strong> textfield with the following:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">client:
+  awsRegions:
+    - us-gov-east-1
+    - us-gov-west-1</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Click <strong>Save</strong></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_feedback">Feedback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/aws-quickstart/quickstart-aws-data-fabric-security" target="_blank" rel="noopener">GitHub repository</a> for this Partner Solution. To submit code, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">Partner Solution Contributor&#8217;s Guide</a>. To submit feedback on this deployment guide, use the following GitHub links:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/aws-quickstart/quickstart-aws-data-fabric-security/issues/new?labels=documentation,grammar+or+spelling&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Grammar or spelling</a></p>
+</li>
+<li>
+<p><a href="https://github.com/aws-quickstart/quickstart-aws-data-fabric-security/issues/new?labels=documentation,broken+link&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Broken link</a></p>
+</li>
+<li>
+<p><a href="https://github.com/aws-quickstart/quickstart-aws-data-fabric-security/issues/new?labels=documentation,inaccurate+content&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Inaccurate content</a></p>
+</li>
+<li>
+<p><a href="https://github.com/aws-quickstart/quickstart-aws-data-fabric-security/issues/new?labels=documentation,display+and+design&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Display or design</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_notices">Notices</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This document is provided for informational purposes only. It represents current AWS product offerings and practices as of the date of issue of this document, which are subject to change without notice. Customers are responsible for making their own independent assessment of the information in this document and any use of AWS products or services, each of which is provided "as is" without warranty of any kind, whether expressed or implied. This document does not create any warranties, representations, contractual commitments, conditions, or assurances from AWS, its affiliates, suppliers, or licensors. The responsibilities and liabilities of AWS to its customers are controlled by AWS agreements, and this document is not part of, nor does it modify, any agreement between AWS and its customers.</p>
+</div>
+<div class="paragraph">
+<p>The software included with this paper is licensed under the Apache License, version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at <a href="https://aws.amazon.com/apache2.0/" target="_blank" rel="noopener">https://aws.amazon.com/apache2.0/</a> or in the accompanying "license" file. This code is distributed on an "as is" basis, without warranties or conditions of any kind, either expressed or implied. Refer to the License for specific language governing permissions and limitations.</p>
+</div>
+</div>
+</div>
+</div>
+<footer>
+    <p class="footer-text">
+        <!-- We can use document attributes: -->
+        <!-- Generated with Asciidoctor v2.0.17. -->
+        <a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> |
+        &copy; 2023, Amazon Web Services, Inc. or its affiliates and Immuta and Radiant Logic. All rights reserved.
+    </p>
+</footer>
+</body>
+</html>
