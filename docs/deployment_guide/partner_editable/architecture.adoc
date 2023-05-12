@@ -11,13 +11,14 @@ image::../docs/deployment_guide/images/data-fabric-security-on-aws-architecture-
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* An architecture that spans two Availability Zones.
-* A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.
-* In the public subnets, managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.
+* An architecture that spans two Availability Zones.*
+* A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.*
+* In the public subnets, NAT gateways to allow outbound internet access for resources in the private subnets.*
 * Two Classic Load Balancers, one each for the Immuta and RadiantOne services in the private subnets.
-* In the private subnets, three-node Amazon EKS clusters containing highly-available deployments of Immuta and RadiantOne.
-* Amazon EKS to provide the Kubernetes control plane for the clusters.
-* Endpoints for other AWS services to access the Amazon EKS Kubernetes API server.
+* In the private subnets:
+** Three-node Amazon EKS clusters containing highly-available deployments of Immuta and RadiantOne.
+** Amazon EKS to provide the Kubernetes control plane for the clusters.
+** Endpoints for other AWS services to access the Amazon EKS Kubernetes API server.
 * Amazon CloudWatch to collect, store, access, and monitor logs.
 * Amazon Route 53 for a private hosted zone and resolvers.
 * AWS Lambda to install Immuta and RadiantOne.
