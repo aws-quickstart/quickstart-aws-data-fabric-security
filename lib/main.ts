@@ -1,4 +1,4 @@
-import { Stack } from "aws-cdk-lib";
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from "constructs";
 
 import { DataFabricSecurityStack } from "./data-fabric-security-stack";
@@ -10,10 +10,12 @@ import { MainStackProps } from "./props/stack-props";
 import { Config } from "./core/config";
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
 
+import * as iam from "aws-cdk-lib/aws-iam";
+
 /**
  * Main stack to deploy the solution.
  */
-export class MainStack extends Stack {
+export class MainStack extends cdk.Stack {
 
   /**
    * Constructor of the main solution stack.
@@ -25,12 +27,12 @@ export class MainStack extends Stack {
   constructor(scope: Construct, id: string, props: MainStackProps) {
     super(scope, id, props);
 
-    const partition = Stack.of(this).partition;
+    const partition = cdk.Stack.of(this).partition;
     const commonName = "data-fabric-security";
     const mainId = (id: string) => `${commonName}-${id}`;
 
-    let immutaStack: Stack;
-    let radiantlogicStack: Stack;
+    let immutaStack: cdk.Stack;
+    let radiantlogicStack: cdk.Stack;
 
     const dataFabricCoreStack = new DataFabricSecurityStack(this, mainId('core-stack'), {
       env: props.env,
@@ -43,6 +45,32 @@ export class MainStack extends Stack {
       domain: Config.Current.Domain
     });
 
+    const lambdaPlatformRole = new iam.Role(this, mainId('lambda-platform-role'), {
+      assumedBy: new iam.AccountRootPrincipal(),
+      description: "This role is for AWS Lambda to assume for cluster operations",
+    });
+
+    lambdaPlatformRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: [`arn:${cdk.Aws.PARTITION}:eks:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
+      actions: [
+        "eks:DescribeNodegroup",
+        "eks:ListNodegroups",
+        "eks:DescribeCluster",
+        "eks:ListClusters",
+        "eks:AccessKubernetesApi",
+        "ssm:GetParameter",
+        "eks:ListUpdates",
+        "eks:ListFargateProfiles"
+      ]
+    }));
+
+    lambdaPlatformRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      resources: ["*"],
+      actions: ["eks:ListClusters"]
+    }));
+
     const eksBlueprintsStack = new EksBlueprintsStack(this, mainId('eks-cluster'), {
       env: props.env,
       prefix: commonName,
@@ -54,7 +82,8 @@ export class MainStack extends Stack {
       endpointAccess: Config.Current.EKS.EKSEndpointAccess,
       instanceType: Config.Current.EKS.InstanceType,
       numInstances: Config.Current.EKS.ClusterSize,
-      adminRoleArn: Config.Current.EKS.EKSAdminRole
+      adminRoleArn: Config.Current.EKS.EKSAdminRole,
+      lambdaPlatformRole: lambdaPlatformRole
     });
 
     const eksClusterStack = eksBlueprintsStack.getStack();
@@ -67,7 +96,7 @@ export class MainStack extends Stack {
         securityGroups: [eksClusterStack.getClusterInfo().cluster.clusterSecurityGroup],
         partition: partition,
         cluster: eksClusterStack.getClusterInfo().cluster, 
-        clusterRole: eksClusterStack.getClusterInfo().cluster.adminRole,
+        lambdaPlatformRole: lambdaPlatformRole,
         hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
         immuta: {
           chartVersion: Config.Current.Immuta.ChartVersion,
@@ -102,7 +131,7 @@ export class MainStack extends Stack {
         securityGroups: [eksClusterStack.getClusterInfo().cluster.clusterSecurityGroup],
         partition: partition,
         cluster: eksClusterStack.getClusterInfo().cluster, 
-        clusterRole: eksClusterStack.getClusterInfo().cluster.adminRole,
+        lambdaPlatformRole: lambdaPlatformRole,
         domain: Config.Current.Domain,
         hostedZoneId: dataFabricCoreStack.privateZone.hostedZoneId,
         radiantlogic: {

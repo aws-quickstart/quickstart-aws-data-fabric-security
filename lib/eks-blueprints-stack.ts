@@ -7,7 +7,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as blueprints from '@aws-quickstart/eks-blueprints';
 import { addons } from "@aws-quickstart/eks-blueprints";
 
-import { KubectlV24Layer } from '@aws-cdk/lambda-layer-kubectl-v24';
+import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
 import { ImportHostedZoneProvider } from "@aws-quickstart/eks-blueprints";
 
 import { CdkNagSuppressions } from "./core/utilities/cdk-nag-suppressions";
@@ -57,14 +57,17 @@ export class EksBlueprintsStack {
       userRoleArn: props.adminRoleArn
     });
 
+    const lambdaPlatformTeam = new blueprints.PlatformTeam({
+      name: this.eksId('lambda-platform-team'),
+      userRoleArn: props.lambdaPlatformRole.roleArn
+    });
+
     // Create EKS add-ons.
     const addOns: blueprints.ClusterAddOn[] = [
       new addons.VpcCniAddOn(),
-      new addons.CoreDnsAddOn('v1.9.3-eksbuild.2'),
-      new addons.KubeProxyAddOn('v1.25.6-eksbuild.2'),
-      new addons.EbsCsiDriverAddOn({
-        version: 'v1.17.0-eksbuild.1'
-      }),
+      new addons.CoreDnsAddOn(),
+      new addons.KubeProxyAddOn(),
+      new addons.EbsCsiDriverAddOn(),
       new addons.ExternalDnsAddOn({
         hostedZoneResources: [props.domain],
         values: {
@@ -93,7 +96,7 @@ export class EksBlueprintsStack {
     // Create the cluster provider.
     const genericClusterProvider = new blueprints.GenericClusterProvider({
       clusterName: props.clusterName,
-      version: eks.KubernetesVersion.of('1.25'),
+      version: eks.KubernetesVersion.of('1.27'),
       endpointAccess: access,
       clusterLogging: [
         eks.ClusterLoggingTypes.API,
@@ -102,7 +105,7 @@ export class EksBlueprintsStack {
         eks.ClusterLoggingTypes.SCHEDULER,
         eks.ClusterLoggingTypes.AUDIT,
       ],
-      kubectlLayer: new KubectlV24Layer(scope, this.eksId('kubectl')),
+      kubectlLayer: new KubectlV27Layer(scope, this.eksId('kubectl')),
       secretsEncryptionKey: clusterKey,
       managedNodeGroups: [
         {
@@ -122,7 +125,7 @@ export class EksBlueprintsStack {
       .addOns(...addOns)
       .account(props.env.account)
       .region(props.env.region)
-      .teams(adminTeam)
+      .teams(adminTeam, lambdaPlatformTeam)
       .resourceProvider(
         props.domain,
         new ImportHostedZoneProvider(props.hostedZoneId)
@@ -153,10 +156,10 @@ export class EksBlueprintsStack {
    * 
    * @param cluster - The EKS Cluster.
    */
-  private generateOutputs(cluster : eks.Cluster): void {
+  private generateOutputs(cluster : eks.ICluster): void {
     new CfnOutput(this.eksBuildStack, "EKSAdminRole", {
-      value: cluster.adminRole.roleArn,
-      description: "Admin role for EKS Cluster",
+      value: cluster.kubectlLambdaRole?.roleArn as string,
+      description: "Kubectl Lambda role for EKS Cluster",
       exportName: "EKSAdminRole"
     });
 

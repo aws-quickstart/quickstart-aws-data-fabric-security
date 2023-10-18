@@ -89,10 +89,10 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
     this.clusterSecurityGroup = props.cluster.clusterSecurityGroup;
 
     const immutaDeploy = this.createDeployFunction(props);
-    props.cluster.adminRole.grantAssumeRole(immutaDeploy.role!);
+    props.cluster.kubectlLambdaRole?.grantAssumeRole(immutaDeploy.role!);
 
     const immutaDestroy = this.createDestroyFunction(props);
-    props.cluster.adminRole.grantAssumeRole(immutaDestroy.role!);
+    props.cluster.kubectlLambdaRole?.grantAssumeRole(immutaDestroy.role!);
 
     this.createBootstrap(immutaDeploy, immutaDestroy);
 
@@ -171,7 +171,7 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
       environment: {
         'NAMESPACE': this.namespace,
         'CLUSTER_NAME': props.cluster.clusterName,
-        'CLUSTER_ADMIN_ROLE': props.cluster.adminRole.roleArn,
+        'CLUSTER_LAMBDA_ROLE': props.lambdaPlatformRole.roleArn,
         'LAMBDA_SOURCE_FILE': `./${this.installStr}.sh`,
         'CHART_VERSION': props.immuta.chartVersion,
         'IMMUTA_VERSION': props.immuta.immutaVersion,
@@ -189,6 +189,8 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
         'EQ_PATRONI_PASSWORD': props.immuta.qePassword.patroniApiPassword,
       }
     });
+
+    props.lambdaPlatformRole.grantAssumeRole(immutaDeployRole);
 
     return immutaDeployFunction;
   }
@@ -224,10 +226,12 @@ export class ImmutaStack extends cdk.NestedStack implements ILambdaDeploymentSta
         'IMMUTA_USERNAME': props.immuta.username,
         'IMMUTA_PASSWORD': props.immuta.password,
         'CLUSTER_NAME': props.cluster.clusterName,
-        'CLUSTER_ADMIN_ROLE': props.cluster.adminRole.roleArn,
+        'CLUSTER_LAMBDA_ROLE': props.lambdaPlatformRole.roleArn,
         'LAMBDA_SOURCE_FILE': `./${this.uninstallStr}.sh`,
       }
     });
+
+    props.lambdaPlatformRole.grantAssumeRole(immutaDestroyRole);
 
     return immutaDestroyFunction;
   }

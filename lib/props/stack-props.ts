@@ -39,7 +39,8 @@ export interface EksBlueprintsStackProps extends StackProps {
   endpointAccess: string,
   instanceType: string,
   numInstances: number,
-  adminRoleArn: string
+  adminRoleArn: string,
+  lambdaPlatformRole: iam.Role
 }
 
 /**
@@ -51,8 +52,8 @@ export interface ImmutaStackProps extends NestedStackProps {
   vpc: ec2.IVpc,
   securityGroups: [ec2.ISecurityGroup],
   partition: string,
-  cluster: eks.Cluster,
-  clusterRole: iam.IRole,
+  cluster: eks.ICluster,
+  lambdaPlatformRole: iam.Role,
   hostedZoneId: string,
   immuta: {
     chartVersion: string,
@@ -85,8 +86,8 @@ export interface RadiantLogicStackProps extends NestedStackProps {
   vpc: ec2.IVpc,
   securityGroups: [ec2.ISecurityGroup],
   partition: string,
-  cluster: eks.Cluster,
-  clusterRole: iam.IRole,
+  cluster: eks.ICluster,
+  lambdaPlatformRole: iam.IRole,
   hostedZoneId: string,
   domain: string,
   radiantlogic: {
