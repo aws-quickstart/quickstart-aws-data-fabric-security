@@ -89,10 +89,10 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
     this.clusterSecurityGroup = props.cluster.clusterSecurityGroup;
 
     const radiantlogicDeploy = this.createDeployFunction(props);
-    props.cluster.adminRole.grantAssumeRole(radiantlogicDeploy.role!);
+    props.cluster.kubectlLambdaRole?.grantAssumeRole(radiantlogicDeploy.role!);
 
     const radiantlogicDestroy = this.createDestroyFunction(props);
-    props.cluster.adminRole.grantAssumeRole(radiantlogicDestroy.role!);
+    props.cluster.kubectlLambdaRole?.grantAssumeRole(radiantlogicDestroy.role!);
 
     this.createBootstrap(radiantlogicDeploy, radiantlogicDestroy);
 
@@ -171,7 +171,7 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
       environment: {
         'NAMESPACE': this.namespace,
         'CLUSTER_NAME': props.cluster.clusterName,
-        'CLUSTER_ADMIN_ROLE': props.cluster.adminRole.roleArn,
+        'CLUSTER_LAMBDA_ROLE': props.lambdaPlatformRole.roleArn,
         "ZK_IMAGE_TAG": props.radiantlogic.zkImageTag,
         "FID_IMAGE_TAG": props.radiantlogic.fidImageTag,
         'HOSTNAME': `${this.namespace}.${props.domain}`,
@@ -180,6 +180,8 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
         'LAMBDA_SOURCE_FILE': `./${this.installStr}.sh`,
       }
     });
+
+    props.lambdaPlatformRole.grantAssumeRole(radiantlogicDeployRole);
 
     return radiantlogicDeployFunction;
   }
@@ -213,10 +215,12 @@ export class RadiantLogicStack extends cdk.NestedStack implements ILambdaDeploym
       environment: {
         'NAMESPACE': this.namespace,
         'CLUSTER_NAME': props.cluster.clusterName,
-        'CLUSTER_ADMIN_ROLE': props.cluster.adminRole.roleArn,
+        'CLUSTER_LAMBDA_ROLE': props.lambdaPlatformRole.roleArn,
         'LAMBDA_SOURCE_FILE': `./${this.uninstallStr}.sh`,
       }
     });
+
+    props.lambdaPlatformRole.grantAssumeRole(radiantlogicDestroyRole);
 
     return radiantlogicDestroyFunction;
   }
