@@ -18,9 +18,9 @@ EKS:
 
 Immuta:
   Deploy: true
-  ChartVersion: "4.9.5"
-  ImmutaVersion: "2022.4.3"
-  ImageTag: "2022.4.3"
+  ChartVersion: "4.13.2"
+  ImmutaVersion: "2023.4.0"
+  ImageTag: "2023.4.0"
   Instance:
     Username: "USERNAME"
     Password: "PASSWORD"
@@ -38,6 +38,6 @@ Immuta:
 RadiantLogic:
   Deploy: true
   ZkImageTag: "3.5.8"
-  FidImageTag: "7.4.4"
+  FidImageTag: "8.0.0"
   License: "\\{rlib\\}xXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   RootPassword: "Password1!"
