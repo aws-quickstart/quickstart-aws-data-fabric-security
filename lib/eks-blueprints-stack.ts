@@ -4,6 +4,7 @@ import { Construct } from "constructs";
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as blueprints from '@aws-quickstart/eks-blueprints';
 import { addons } from "@aws-quickstart/eks-blueprints";
 
@@ -107,6 +108,10 @@ export class EksBlueprintsStack {
       ],
       kubectlLayer: new KubectlV27Layer(scope, this.eksId('kubectl')),
       secretsEncryptionKey: clusterKey,
+      mastersRole: blueprints.getResource(context => {
+        return iam.Role.fromRoleArn(context.scope, "eks-masters-role", props.adminRoleArn!)}),
+      outputMastersRoleArn: true,
+      outputClusterName: true,
       managedNodeGroups: [
         {
           id: this.eksId('group-node'),
@@ -157,10 +162,16 @@ export class EksBlueprintsStack {
    * @param cluster - The EKS Cluster.
    */
   private generateOutputs(cluster : eks.ICluster): void {
-    new CfnOutput(this.eksBuildStack, "EKSAdminRole", {
+    new CfnOutput(this.eksBuildStack, "EKSLambdaRole", {
       value: cluster.kubectlLambdaRole?.roleArn as string,
       description: "Kubectl Lambda role for EKS Cluster",
-      exportName: "EKSAdminRole"
+      exportName: "EKSLambdaRole"
+    });
+
+    new CfnOutput(this.eksBuildStack, "EKSKubectlRole", {
+      value: cluster.kubectlRole?.roleArn as string,
+      description: "Kubectl Lambda role for EKS Cluster",
+      exportName: "EKSKubectlRole"
     });
 
     new CfnOutput(this.eksBuildStack, "ClusterArn", {
